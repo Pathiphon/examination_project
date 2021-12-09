@@ -4,6 +4,9 @@ import Button from '@mui/material/Button';
 import { UserContext } from '../context/UserContext'
 import ErrorMessage from './ErrorMessage';
 
+import Card from '@mui/material/Card';
+import FormControl from '@mui/material/FormControl';
+
 const Register = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -39,36 +42,37 @@ const Register = () => {
         }
     }
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <h1>สมัครสมาชิก</h1>
-                <div className="mb-3">
-                    <TextField className="w-25"  label="ชื่อ" variant="filled"
+        <div className="container mx-auto">
+            <Card variant="outlined" sx={{ maxWidth: 400 }} className="container"  >
+            <FormControl onSubmit={handleSubmit} className="container ">
+                <h1 className="mx-auto">สมัครสมาชิก</h1>
+                <div className="mb-3 row px-3">
+                    <TextField  label="ชื่อ" variant="filled" 
                     value={firstname} 
                     onChange={(e)=>setFirstname(e.target.value)} required
                     />
                 </div>
-                <div className="mb-3">
-                    <TextField className="w-25"  label="นามสกุล" variant="filled"
+                <div className="mb-3 row px-3">
+                    <TextField  label="นามสกุล" variant="filled" 
                     value={lastname} 
                     onChange={(e)=>setLastname(e.target.value)} required
                     />
                 </div>
-                <div className="mb-3">
-                    <TextField className="w-25"  label="Email Address" variant="filled"
+                <div className="mb-3 row px-3">
+                    <TextField  label="Email Address" variant="filled"
                     value={email} 
                     onChange={(e)=>setEmail(e.target.value)} required
                     />
                 </div>
-                <div className="mb-3">
-                    <TextField className="w-25"  label="รหัสผ่าน" variant="filled"
+                <div className="mb-3 row px-3">
+                    <TextField  label="รหัสผ่าน" variant="filled"
                     type="password"
                     value={password} 
                     onChange={(e)=>setPassword(e.target.value)} required
                     />
                 </div>
-                <div className="mb-3">
-                    <TextField className="w-25"  label="ยืนยันรหัสผ่าน" variant="filled"
+                <div className="mb-3 row px-3">
+                    <TextField  label="ยืนยันรหัสผ่าน" variant="filled"
                     type="password"
                     value={confirmationPassword} 
                     onChange={(e)=>setConfirmationPassword(e.target.value)} required
@@ -77,8 +81,9 @@ const Register = () => {
                 <div>
                     <ErrorMessage message={errorMessage}/>
                 </div>
-                <Button variant="contained" color="success" type="submit">ยืนยันการสมัคร</Button>
-            </form>
+                <Button variant="contained" color="success" type="submit" className="w-50 mx-auto mb-2">ยืนยันการสมัคร</Button>
+            </FormControl>
+            </Card>
         </div>
     );
 };

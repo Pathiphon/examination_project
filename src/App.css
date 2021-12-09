@@ -1,5 +1,22 @@
 @import url('https://fonts.googleapis.com/css?family=Itim');
 
-body {
+/* body {
   font-family: 'Itim', Itim;
 }
+div{
+  font-family: 'Itim', Itim;
+} */
+.icon_nav{
+  color: white;
+}
+.svg_icons {
+  transform: scale(2);
+}
+.textDec{
+  text-decoration: none;
+  color: white;
+}
+.textDec:hover {
+  color: rgb(226, 226, 226);
+}
+
