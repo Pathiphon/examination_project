@@ -9,6 +9,9 @@ div{
 .icon_nav{
   color: white;
 }
+.bt_back{
+  background-color: black;
+}
 .svg_icons {
   transform: scale(2);
 }

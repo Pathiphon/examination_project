@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import moment from "moment"
+import dayjs from "dayjs"
 
 import ErrorMessage from "./ErrorMessage"
 import { UserContext } from "../context/UserContext"
@@ -67,11 +67,12 @@ export default function Manage_exam() {
                             <tr key={exams.id}>
                                 <td>{exams.headerName}</td>
                                 <td>10</td>
-                                <td>{exams.date_pre}</td>
-                                <td>{exams.date_post}</td>
-                                <td>{moment(exams.date_last_updated).format('L,LT')}</td>
+                                <td>{dayjs(exams.date_pre).format('DD/MM/YYYY HH:mm')}</td>
+                                <td>{dayjs(exams.date_post).format('DD/MM/YYYY HH:mm')}</td>
+                                <td>{dayjs(exams.date_last_updated).format('DD/MM/YYYY HH:mm')}</td>
                                 <td>
-                                    <Button variant="outlined" color="warning" startIcon={<EditIcon />}onClick={() => handleUpdate(exams.id)}>
+                                    <Button variant="outlined" color="warning" startIcon={<EditIcon />}
+                                    onClick={() => handleUpdate(exams.id)}>
                                         แก้ไข
                                     </Button>
                                 </td>

@@ -30,8 +30,8 @@ class Exam_heading(_database.Base):
     id = Column(Integer, primary_key=True, index=True)
     owner_id = Column(Integer, ForeignKey('users.id'))
     headerName = Column(String(255))
-    date_pre = Column(String(100))
-    date_post = Column(String(100))
+    date_pre = Column(DateTime)
+    date_post = Column(DateTime)
     date_created = Column(DateTime, default=tz.date.isoformat(sep = " "))
     date_last_updated = Column(DateTime, default=tz.date.isoformat(sep = " "))
 

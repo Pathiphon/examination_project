@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import moment from "moment"
+import dayjs from "dayjs"
 import { useNavigate } from "react-router-dom";
 import ErrorMessage from "./ErrorMessage"
 import { UserContext } from "../context/UserContext"
@@ -29,51 +29,30 @@ export default function Edit_exam({token,id}) {
     const [date_last_updated, setDate_last_updated] = useState("")
 
     useEffect(()=>{
-        const get_Exam = async()=>{
-            const requestOptions = {
-                method:"GET",
-                headers: { 
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-            }
-            const response = await fetch(`/api/exam_headings/${id}`,requestOptions)
-            if(!response.ok){
-                setErrorMessage("Could not get the Exam");
-            }else{
-                const data = await response.json()
-                setHeaderName(data.headerName)
-                setDate_pre(data.date_pre)
-                setDate_post(data.date_post)
-                setDate_last_updated(data.date_last_updated)
-            }
-        }
         if(id){
-            get_Exam()
+        get_Exam()
         }
-
-    },[id,token])
-
-    const get_Exam = async () => {
+    })
+    const get_Exam = async()=>{
         const requestOptions = {
-            method: "GET",
+            method:"GET",
             headers: { 
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + token,
-            },            
-        };
-        const response = await fetch("/api/exam_heading", requestOptions)
-        if (!response.ok) {
-            alert("Something went wrong.Couldn't load the Exam")
-        } else {
-            const data = await response.json()
-            setExam(data)
+            },
         }
-    };
-    useEffect(() => {
-        get_Exam()
-    }, [])
+        const response = await fetch(`/api/exam_headings/${id}`,requestOptions)
+        if(!response.ok){
+            setErrorMessage("Could not get the Exam");
+        }else{
+            const data = await response.json()
+            setHeaderName(data.headerName)
+            setDate_pre(data.date_pre)
+            setDate_post(data.date_post)
+            setDate_last_updated(data.date_last_updated)
+        }
 
+    }
 
     const handleModal = ()=>{
         setActiveModal(!activeModal);

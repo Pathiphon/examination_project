@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import moment from "moment"
+import Create_exam from './Create_exam';
+import dayjs from "dayjs"
 import FormControl from '@mui/material/FormControl';
 import { TextField, Card, CardHeader, Grid ,Divider,Button} from '@mui/material';
 import Box from '@mui/material/Box';
 import SubtitlesIcon from '@mui/icons-material/Subtitles';
+import ErrorMessage from './ErrorMessage';
 
 
-export default function ExamModal({ active, handleModal, token, id, setErrorMessage }) {
+export default function ExamModal({ active, handleModal, token, id, setErrorMessage,Id_toperent }) {
     const [headerName, setHeaderName] = useState("")
+    const [errorMessage,] = useState("");
     const [date_pre, setDate_pre] = useState("")
     const [time_pre, setTime_pre] = useState("")
     const [date_post, setDate_post] = useState("")
@@ -38,10 +41,34 @@ export default function ExamModal({ active, handleModal, token, id, setErrorMess
         if(!response.ok){
             setErrorMessage("มีข้อผิดพลาดในการเพิ่มข้อมูล")
         }else{
+            const data = await response.json()
+            Id_toperent(data.id)
             cleanFormData()
             handleModal()
+            
         }
     }
+    const handleUpdateExam = async (e) => {
+        e.preventDefault();
+        const requestOptions = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            headerName:headerName,
+            date_pre:date_pre+" "+time_pre,
+            date_post:date_post+" "+time_post,
+          }),
+        };
+        const response = await fetch(`/api/exam_headings/${id}`, requestOptions);
+        if (!response.ok) {
+          setErrorMessage("Something went wrong when updating Exam");
+        } else {
+          handleModal();
+        }
+      };
 
     useEffect(()=>{
         const get_Exam = async()=>{
@@ -58,9 +85,10 @@ export default function ExamModal({ active, handleModal, token, id, setErrorMess
             }else{
                 const data = await response.json()
                 setHeaderName(data.headerName)
-                setDate_pre(data.date_pre)
-                console.log(date_pre);
-                setDate_post(data.date_post)
+                setDate_pre(dayjs(data.date_pre).format('YYYY-MM-DD'))
+                setDate_post(dayjs(data.date_post).format('YYYY-MM-DD'))
+                setTime_pre(dayjs(data.date_pre).format('HH:mm'))
+                setTime_post(dayjs(data.date_post).format('HH:mm'))
             }
         }
         if(id){
@@ -70,6 +98,7 @@ export default function ExamModal({ active, handleModal, token, id, setErrorMess
     },[id,token])
 
     return (
+       
         <div className={`modal ${active && "is-active"}`}>
             <div className="modal-background" onClick={handleModal}></div>
             <div className="modal-card">
@@ -170,14 +199,16 @@ export default function ExamModal({ active, handleModal, token, id, setErrorMess
                         </Box>
                     </form>
                 </section>
+                
                 <footer className="modal-card-foot has-background-primary-light">
+                <ErrorMessage message={errorMessage}/>
                     {id ? (
-                        <Button className="Button is-info" >
+                        <Button className="Button is-info" onClick={handleUpdateExam} >
                             แก้ไข
                         </Button>
-                    ) : (
+                    ) : (                        
                         <Button onClick={handleCreateExam} variant="contained" color="success" >
-                            บันทึก
+                            บันทึก                           
                         </Button>
                     )}
                     <Button variant="outlined" color="error">

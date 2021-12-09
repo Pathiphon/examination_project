@@ -39,7 +39,6 @@ const Header = () => {
     setToken(null)
   }
   const {pathname} = useLocation();
-  console.log(pathname);
 
 
   const fetchUser = async () => {
@@ -58,8 +57,6 @@ const Header = () => {
     }
     const data = await response.json()
     setUser(data)
-    console.log(user);
-
   };
   useEffect(() => {
     fetchUser();
@@ -118,7 +115,7 @@ const Header = () => {
                     <ListItemText primary="สร้างข้อสอบ" />
                   </ListItem>
                   </Link>
-                <Link className="textDec" to="/">
+                <Link className="textDec" to="/Change_persen">
                   <ListItem button >
                     <ListItemIcon>
                       <DataUsageIcon className="icon_nav" />
@@ -129,7 +126,7 @@ const Header = () => {
               </List>
               <Divider />
               <List>
-                <Link className="textDec" to="/Manage_exam">
+                <Link className="textDec" to="/">
                   <ListItem button >
                     <ListItemIcon>
                       <DescriptionIcon className="icon_nav" />
@@ -137,7 +134,7 @@ const Header = () => {
                     <ListItemText primary="จัดการข้อสอบ" />
                   </ListItem>
                 </Link>
-                <Link className="textDec" to="/">
+                <Link className="textDec" to="/Check_exam">
                   <ListItem button >
                     <ListItemIcon>
                       <FindInPageIcon className="icon_nav" />
@@ -145,7 +142,7 @@ const Header = () => {
                     <ListItemText primary="ตรวจข้อสอบ" />
                   </ListItem>
                 </Link>
-                <Link className="textDec" to="/">
+                <Link className="textDec" to="/Report">
                   <ListItem button >
                     <ListItemIcon>
                       <AnalyticsIcon className="icon_nav" />
@@ -156,7 +153,7 @@ const Header = () => {
               </List>
               <Divider />
               <List>
-                <Link className="textDec" to="/">
+                <Link className="textDec" to="/Profile">
                   <ListItem button >
                     <ListItemIcon>
                       <AccountCircleIcon className="icon_nav" />
@@ -164,7 +161,7 @@ const Header = () => {
                     <ListItemText primary="จัดการโปรไฟล์" />
                   </ListItem>
                 </Link>
-                <Link className="textDec" to="/">
+                <Link className="textDec" to="/Logout">
                   <ListItem button onClick={handleLogout} >
                     <ListItemIcon>
                       <ExitToAppIcon className="icon_nav" />
@@ -184,7 +181,7 @@ const Header = () => {
               <Toolbar />
               <Routes>
                 {/* <Route path='/Create_exam' element={<Create_exam/>}/> */}
-                <Route exact path='/' element={<Manage_exam/>}/>
+                <Route path='/' element={<Manage_exam/>}/>
               </Routes>
               
             </Box>

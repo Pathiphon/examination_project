@@ -25,8 +25,8 @@ class User(_UserBase):
 
 class _Exam_headingBase(_pydantic.BaseModel):
     headerName:str
-    date_pre:str
-    date_post:str
+    date_pre:_dt.datetime
+    date_post:_dt.datetime
 
 class Exam_headingCreate(_Exam_headingBase):
     pass
