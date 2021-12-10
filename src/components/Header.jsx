@@ -67,13 +67,13 @@ const Header = () => {
       <div>
 
         {token && (
-          <Box sx={{ display: 'flex' }}  >
+          <Box sx={{ display: 'flex' }} >
             {pathname !== "/Create_exam"?(
               <>
             <CssBaseline />
             <AppBar
-              position="fixed"
-              sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }} style={{ background: 'white' }}
+              position="fixed" 
+              sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }} style={{ background: 'white'}}
             >
               <Toolbar >
                 <Typography variant="h6" noWrap component="div" style={{ color: 'black' }}>
@@ -186,7 +186,9 @@ const Header = () => {
               
             </Box>
            </> ):(
-             <Create_exam/>
+             <div className="w-100" >
+             <Create_exam />
+             </div>
            )}
            
           </Box>

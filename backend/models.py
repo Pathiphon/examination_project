@@ -2,7 +2,7 @@ import datetime as _dt
 import timezone as tz
 from sqlalchemy import Table,Column
 from sqlalchemy.sql.schema import ForeignKey
-from sqlalchemy.sql.sqltypes import DateTime, Integer,String
+from sqlalchemy.sql.sqltypes import Boolean, DateTime, Integer,String
 import sqlalchemy as _sql
 from sqlalchemy.schema import Column
 import sqlalchemy.orm as _orm
@@ -36,3 +36,10 @@ class Exam_heading(_database.Base):
     date_last_updated = Column(DateTime, default=tz.date.isoformat(sep = " "))
 
     owner = _orm.relationship("User", back_populates="exam_headings")
+
+class Exam_question(_database.Base):
+    __tablename__="exam_questions"
+    ques_id = Column(Integer,primary_key=True,index=True)
+    heading_id = Column(Integer,ForeignKey('exam_headings.id'))
+    question = Column(String(255))
+    consider_bool = Column(Boolean)

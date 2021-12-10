@@ -3,6 +3,7 @@ import datetime as _dt
 import pydantic as _pydantic
 
 
+
 class _UserBase(_pydantic.BaseModel):
     email: str
     firstname:str
@@ -37,6 +38,21 @@ class Exam_heading(_Exam_headingBase):
     owner_id: int
     date_created: _dt.datetime
     date_last_updated: _dt.datetime
+
+    class Config:
+        orm_mode = True
+
+# ***************************************
+class _Exam_questionBase(_pydantic.BaseModel):
+    question:str
+    consider_bool :bool
+
+class Exam_questionCreate(_Exam_questionBase):
+    pass
+
+class Exam_question(_Exam_questionBase):
+    ques_id:int
+    heading_id:int
 
     class Config:
         orm_mode = True

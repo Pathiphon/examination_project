@@ -75,6 +75,7 @@ async def get_current_user(
 
     return _schemas.User.from_orm(user)
 
+# *************************************************************************
 
 async def create_exam_heading(user: _schemas.User, db: _orm.Session, exam_heading: _schemas.Exam_headingCreate):
     exam_heading = _models.Exam_heading(**exam_heading.dict(), owner_id=user.id)
@@ -128,3 +129,35 @@ async def update_exam_heading(exam_heading_id: int, exam_heading: _schemas.Exam_
     db.refresh(exam_heading_db)
 
     return _schemas.Exam_heading.from_orm(exam_heading_db)
+
+# *************************ข้อสอบ**********************************************
+
+async def create_exam_question(exam_heading: _schemas.Exam_heading, db: _orm.Session, exam_question: _schemas.Exam_questionCreate):
+    exam_question = _models.Exam_question(**exam_question.dict(), heading_id=exam_heading.id)
+    db.add(exam_question)
+    db.commit()
+    db.refresh(exam_question)
+    return _schemas.Exam_question.from_orm(exam_question)
+
+async def get_exam_questions(exam_heading: _schemas.Exam_heading, db: _orm.Session):
+    exam_questions = db.query(_models.Exam_question).filter_by(heading_id=exam_heading.id)
+
+    return list(map(_schemas.Exam_question.from_orm, exam_questions))
+
+async def _exam_question_selector(exam_question_id: int, exam_heading: _schemas.Exam_heading, db: _orm.Session):
+    exam_question = (
+        db.query(_models.Exam_question)
+        .filter_by(heading_id=exam_heading.id)
+        .filter(_models.Exam_question.ques_id == exam_question_id)
+        .first()
+    )
+
+    if exam_question is None:
+        raise _fastapi.HTTPException(status_code=404, detail="Exam_question does not exist")
+
+    return exam_question
+
+async def get_exam_question(exam_question_id: int, exam_heading: _schemas.Exam_heading, db: _orm.Session):
+    exam_question = await _exam_question_selector(exam_question_id=exam_question_id, exam_heading=exam_heading, db=db)
+
+    return _schemas.Exam_question.from_orm(exam_question)

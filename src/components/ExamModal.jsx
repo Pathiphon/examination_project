@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import Create_exam from './Create_exam';
 import dayjs from "dayjs"
-import FormControl from '@mui/material/FormControl';
-import { TextField, Card, CardHeader, Grid ,Divider,Button} from '@mui/material';
+import { TextField, Card, CardHeader, Grid ,Divider,Button,Chip} from '@mui/material';
 import Box from '@mui/material/Box';
 import SubtitlesIcon from '@mui/icons-material/Subtitles';
 import ErrorMessage from './ErrorMessage';
@@ -160,8 +158,9 @@ export default function ExamModal({ active, handleModal, token, id, setErrorMess
                                     />
                                 </Box>
                             </div>
-                            <h5>ถึง</h5>
-                            <Divider variant="middle" />
+                            <Divider>
+                            <Chip label="ถึง" />
+                            </Divider>
                             <div>
                                 <Box sx={{
                                     display: 'flex',
