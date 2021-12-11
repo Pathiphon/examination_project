@@ -38,7 +38,7 @@ async def generate_token(
 async def get_user(user: _schemas.User = _fastapi.Depends(_services.get_current_user)):
     return user
 
-
+# ***************************************************************************************
 @app.post("/api/exam_heading", response_model=_schemas.Exam_heading)
 async def create_exam_heading(
     exam_heading: _schemas.Exam_headingCreate,
@@ -90,3 +90,26 @@ async def root():
     return {"message": "Awesome Leads Manager"}
 
     
+# ***********************************************************************
+@app.post("/api/exam_headings/{exam_heading_id}/exam_question", response_model=_schemas.Exam_question)
+async def create_exam_question(
+    exam_question: _schemas.Exam_questionCreate,
+    exam_heading_id:int,
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    return await _services.create_exam_question(exam_heading=exam_heading_id, db=db,exam_question=exam_question)
+
+@app.get("/api/exam_headings/{exam_heading_id}/exam_question", response_model=List[_schemas.Exam_question])
+async def get_exam_questions(
+    exam_heading_id: int,
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    return await _services.get_exam_questions(exam_heading=exam_heading_id, db=db)
+
+@app.get("/api/exam_headings/{exam_heading_id}/exam_questions/{exam_question_id}", status_code=200)
+async def get_exam_question(
+    exam_question_id: int,
+    exam_heading_id:int,
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    return await _services.get_exam_question(exam_question_id, exam_heading_id, db)

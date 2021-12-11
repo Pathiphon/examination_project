@@ -75,6 +75,7 @@ async def get_current_user(
 
     return _schemas.User.from_orm(user)
 
+
 # *************************************************************************
 
 async def create_exam_heading(user: _schemas.User, db: _orm.Session, exam_heading: _schemas.Exam_headingCreate):
@@ -132,22 +133,22 @@ async def update_exam_heading(exam_heading_id: int, exam_heading: _schemas.Exam_
 
 # *************************ข้อสอบ**********************************************
 
-async def create_exam_question(exam_heading: _schemas.Exam_heading, db: _orm.Session, exam_question: _schemas.Exam_questionCreate):
-    exam_question = _models.Exam_question(**exam_question.dict(), heading_id=exam_heading.id)
+async def create_exam_question(exam_heading: id, db: _orm.Session, exam_question: _schemas.Exam_questionCreate):
+    exam_question = _models.Exam_question(**exam_question.dict(), heading_id=exam_heading)
     db.add(exam_question)
     db.commit()
     db.refresh(exam_question)
     return _schemas.Exam_question.from_orm(exam_question)
 
-async def get_exam_questions(exam_heading: _schemas.Exam_heading, db: _orm.Session):
-    exam_questions = db.query(_models.Exam_question).filter_by(heading_id=exam_heading.id)
+async def get_exam_questions(exam_heading:id, db: _orm.Session):
+    exam_questions = db.query(_models.Exam_question).filter_by(heading_id=exam_heading)
 
     return list(map(_schemas.Exam_question.from_orm, exam_questions))
 
-async def _exam_question_selector(exam_question_id: int, exam_heading: _schemas.Exam_heading, db: _orm.Session):
+async def _exam_question_selector(exam_question_id: int, exam_heading: id, db: _orm.Session):
     exam_question = (
         db.query(_models.Exam_question)
-        .filter_by(heading_id=exam_heading.id)
+        .filter_by(heading_id=exam_heading)
         .filter(_models.Exam_question.ques_id == exam_question_id)
         .first()
     )
@@ -157,7 +158,7 @@ async def _exam_question_selector(exam_question_id: int, exam_heading: _schemas.
 
     return exam_question
 
-async def get_exam_question(exam_question_id: int, exam_heading: _schemas.Exam_heading, db: _orm.Session):
+async def get_exam_question(exam_question_id: int, exam_heading: id, db: _orm.Session):
     exam_question = await _exam_question_selector(exam_question_id=exam_question_id, exam_heading=exam_heading, db=db)
 
     return _schemas.Exam_question.from_orm(exam_question)

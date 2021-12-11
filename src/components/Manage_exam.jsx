@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import dayjs from "dayjs"
+import { useNavigate } from 'react-router-dom';
 
 import ErrorMessage from "./ErrorMessage"
 import { UserContext } from "../context/UserContext"
-import Edit_exam from './Edit_exam'
 
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
@@ -14,9 +14,10 @@ export default function Manage_exam() {
     const [exam, setExam] = useState(null)
     const [erroorMessage, setErrorMessage] = useState("")
     const [loaded, setLoaded] = useState(false)
-    const [page_op,setPage_op] = useState(false)
     const [activeModal, setActiveModal] = useState(false)
     const [id, setId] = useState(null)
+
+    let navigate = useNavigate();
 
     const get_Exam = async () => {
         const requestOptions = {
@@ -41,13 +42,13 @@ export default function Manage_exam() {
 
     const handleUpdate = async (id) => {
         setId(id);
-        setPage_op(true)
+        navigate('/Create_exam',{state:{id:id}})
       };
 
     return (
         <div>
-            {!page_op ?(
                 <>
+                
             {/* <Button variant="contained" color="success" type="submit" className="w-50 mx-auto mb-2" 
             onClick={()=>setActiveModal(true)}>
                 บันทึก
@@ -89,10 +90,7 @@ export default function Manage_exam() {
                 <p>Loading</p>
             )}
             </>
-            ):(
-                <Edit_exam id={id} token={token} page_op={page_op}/>
-            )}
-            
+
         </div>
 
     )

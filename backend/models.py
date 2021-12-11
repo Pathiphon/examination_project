@@ -43,3 +43,7 @@ class Exam_question(_database.Base):
     heading_id = Column(Integer,ForeignKey('exam_headings.id'))
     question = Column(String(255))
     consider_bool = Column(Boolean)
+
+    # exam_headings = _orm.relationship("Exam_heading", back_populates="exam_questions")
+
+    

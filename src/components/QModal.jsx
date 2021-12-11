@@ -10,14 +10,37 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { DataGrid } from '@mui/x-data-grid';
 
-export default function QModal({ active, handleModalQ, token, id, setErrorMessage }) {
+export default function QModal({ active, handleModalQ, token, heading_id, setErrorMessage }) {
     const [errorMessage,] = useState("")
     const [question, setQuestion] = useState("")
     const [answer, setAnswer] = useState("")
     const [score, setScore] = useState("")
+    const [consider,setConsider] = useState(true)
 
-    
-
+    const handleCreateExam = async(e)=>{
+        e.preventDefault()
+        const requestOptions = {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+            },
+            body:JSON.stringify({
+                question:question,
+                consider_boll:consider
+            })            
+        };
+        const response =await fetch(`/api/exam_heading/${heading_id}/exam_question`,requestOptions)
+        if(!response.ok){
+            setErrorMessage("มีข้อผิดพลาดในการเพิ่มข้อมูล")
+        }else{
+            const data = await response.json()
+            
+        }
+    }
+    useEffect(()=>{
+        console.log(consider);
+    })
 
     return (
         <div className={`modal ${active && "is-active"}`} >
@@ -25,14 +48,14 @@ export default function QModal({ active, handleModalQ, token, id, setErrorMessag
             <div className="modal-card">
                 <header className="modal-card-head has-text-white-ter">
                     <h1 className="modal-card-title has-text-centered">
-                        {id ? "แก้ไขโจทย์" : "เพิ่มโจทย์"}
+                        {heading_id ? "แก้ไขโจทย์" : "เพิ่มโจทย์"}
                     </h1>
                 </header>
                 <section className="modal-card-body">
                     <form >
                         <FormControlLabel
                             value="start"
-                            control={<Checkbox />}
+                            control={<Checkbox value={consider}  onClick={() => setConsider(!consider)}/>}
                             label="ส่งพิจารณาตรวจภายหลังได้"
                             labelPlacement="start"
                         />
@@ -53,13 +76,12 @@ export default function QModal({ active, handleModalQ, token, id, setErrorMessag
                             <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                                 <EventAvailableIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
                                 <TextField label="เฉลย" variant="standard" id="margin-none"
-                                    value={question}
-                                    onChange={(e) => setQuestion(e.target.value)}
+                                    value={answer}
+                                    onChange={(e) => setAnswer(e.target.value)}
                                     required
                                 />
                                 <TextField label="คะแนน" variant="standard" id="margin-none"
-                                    value={question}
-                                    onChange={(e) => setQuestion(e.target.value)}
+                                    
                                     required
                                 />
                                 <Button
@@ -78,7 +100,7 @@ export default function QModal({ active, handleModalQ, token, id, setErrorMessag
 
                 <footer className="modal-card-foot has-background-primary-light">
                     <ErrorMessage message={errorMessage} />
-                    {id ? (
+                    {heading_id ? (
                         <Button className="Button is-info" >
                             แก้ไขโจทย์
                         </Button>

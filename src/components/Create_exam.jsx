@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react'
 import Manage_exam_full from '../img/manage_exam_full.png'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import ExamModal from './ExamModal'
 import QModal from './QModal';
 import { UserContext } from "../context/UserContext"
 import dayjs from 'dayjs'
+import Manage_exam from './Manage_exam';
 
 import Button from '@mui/material/Button';
 import { Box, Drawer, TextField, Grid } from '@mui/material';
@@ -34,7 +35,10 @@ export default function Create_exam() {
     const [id, setId] = useState(null)
     const [token] = useContext(UserContext)
 
+    const location = useLocation();
+    console.log(location);
     let navigate = useNavigate();
+    
 
     const handleModal = () => {
         setActiveModal(!activeModal);
@@ -50,11 +54,13 @@ export default function Create_exam() {
     }
 
     function handleClick() {
-        navigate('/Manage_exam')
+        navigate('/')
     }
     useEffect(() => {
         if (id) {
             get_Exam()
+        }else if(location.state!==null){
+            setId(location.state.id)
         }
         console.log(id);
     })
@@ -81,7 +87,6 @@ export default function Create_exam() {
 
     return (
         <Box>
-
             <ExamModal
                 active={activeModal}
                 handleModal={handleModal}
@@ -94,7 +99,7 @@ export default function Create_exam() {
                 active={activeModalQ}
                 handleModalQ={handleModalQ}
                 token={token}
-                id={id}
+                heading_id={id}
                 setErrorMessage={setErrorMessage}  
             />
             <Box>
