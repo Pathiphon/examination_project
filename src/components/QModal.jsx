@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { Box, TextField, Card, CardHeader, Grid, Divider, Button, Chip, Checkbox,Table,TableBody ,TableCell 
-, TableContainer,TableHead,TableRow,Paper     } from '@mui/material';
+, TableContainer,TableHead,TableRow,Paper,FormControl     } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import SubtitlesIcon from '@mui/icons-material/Subtitles';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ErrorMessage from './ErrorMessage';
 import Table_Ans from './Table_Ans';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
-import { DataGrid } from '@mui/x-data-grid';
 
-export default function QModal({ active, handleModalQ, token, heading_id, setErrorMessage }) {
+export default function QModal({ active, handleModalQ, token, heading_id,ques_id, setErrorMessage }) {
     const [errorMessage,] = useState("")
     const [question, setQuestion] = useState("")
     const [answer, setAnswer] = useState("")
     const [score, setScore] = useState("")
     const [consider,setConsider] = useState(true)
 
-    const handleCreateExam = async(e)=>{
+    const handleCreateQuestion = async(e)=>{
         e.preventDefault()
         const requestOptions = {
             method: "POST",
@@ -27,35 +25,82 @@ export default function QModal({ active, handleModalQ, token, heading_id, setErr
             },
             body:JSON.stringify({
                 question:question,
-                consider_boll:consider
+                consider_bool:consider
             })            
         };
-        const response =await fetch(`/api/exam_heading/${heading_id}/exam_question`,requestOptions)
+        const response =await fetch(`/api/exam_headings/${heading_id}/exam_question`,requestOptions)
         if(!response.ok){
             setErrorMessage("มีข้อผิดพลาดในการเพิ่มข้อมูล")
         }else{
             const data = await response.json()
+            handleModalQ()
             
         }
     }
     useEffect(()=>{
+        if(ques_id && heading_id){
+            get_Question()
+        }
         console.log(consider);
-    })
+    },[ques_id,heading_id])
+
+    const get_Question = async () => {
+        const requestOptions = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+        };
+        const response = await fetch(
+          `/api/exam_headings/${heading_id}/exam_questions/${ques_id}`,
+          requestOptions
+        );
+        if (!response.ok) {
+          setErrorMessage("Something went wrong.Couldn't load the Exam");
+        } else {
+          const data = await response.json();
+          setConsider(data.consider_bool)
+          console.log(consider);
+          setQuestion(data.question)
+        }
+      };
+
+      const handleUpdateQuestion = async (e) => {
+        e.preventDefault();
+        const requestOptions = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            question:question,
+            consider_bool:consider
+          }),
+        };
+        const response = await fetch(`/api/exam_headings/${heading_id}/exam_questions/${ques_id}`, requestOptions);
+        if (!response.ok) {
+          setErrorMessage("Something went wrong when updating Exam");
+        } else {
+          handleModalQ();
+        }
+      };
 
     return (
-        <div className={`modal ${active && "is-active"}`} >
+        <div className={`modal modal-fx-fadeInScale ${active && "is-active"}`} >
             <div className="modal-background" onClick={handleModalQ}></div>
             <div className="modal-card">
                 <header className="modal-card-head has-text-white-ter">
                     <h1 className="modal-card-title has-text-centered">
-                        {heading_id ? "แก้ไขโจทย์" : "เพิ่มโจทย์"}
+                        {ques_id ? "แก้ไขโจทย์" : "เพิ่มโจทย์"}
                     </h1>
+                    <button className="delete" aria-label="close" onClick={handleModalQ}></button>
                 </header>
                 <section className="modal-card-body">
-                    <form >
                         <FormControlLabel
                             value="start"
-                            control={<Checkbox value={consider}  onClick={() => setConsider(!consider)}/>}
+                            control={<Checkbox checked={consider} onClick={() => setConsider(!consider)}/>}
                             label="ส่งพิจารณาตรวจภายหลังได้"
                             labelPlacement="start"
                         />
@@ -78,11 +123,11 @@ export default function QModal({ active, handleModalQ, token, heading_id, setErr
                                 <TextField label="เฉลย" variant="standard" id="margin-none"
                                     value={answer}
                                     onChange={(e) => setAnswer(e.target.value)}
-                                    required
+                                    
                                 />
                                 <TextField label="คะแนน" variant="standard" id="margin-none"
                                     
-                                    required
+                                    
                                 />
                                 <Button
                                     variant="contained"
@@ -95,17 +140,16 @@ export default function QModal({ active, handleModalQ, token, heading_id, setErr
                             <Divider sx={{m:1}}/>
                         </Box>
                         <Table_Ans/>
-                    </form>
                 </section>
 
-                <footer className="modal-card-foot has-background-primary-light">
+                <footer className="modal-card-foot">
                     <ErrorMessage message={errorMessage} />
-                    {heading_id ? (
+                    {ques_id ? (
                         <Button className="Button is-info" >
                             แก้ไขโจทย์
                         </Button>
                     ) : (
-                        <Button variant="contained" color="success" >
+                        <Button variant="contained" onClick={handleCreateQuestion} color="success" >
                             สร้างโจทย์
                         </Button>
                     )}

@@ -44,6 +44,7 @@ export default function Table_Ans() {
         rows={rows}
         columns={columns}
         pageSize={3}
+        rowsPerPageOption={3}
         
       />
     </div>

@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState,useRouteMatch } from 'react'
 import dayjs from "dayjs"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link, Route, Routes  } from 'react-router-dom';
 
 import ErrorMessage from "./ErrorMessage"
 import { UserContext } from "../context/UserContext"
@@ -8,6 +8,8 @@ import { UserContext } from "../context/UserContext"
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import ShareIcon from '@mui/icons-material/Share';
+import LinearProgress from '@mui/material/LinearProgress';
+import Create_exam from './Create_exam';
 
 export default function Manage_exam() {
     const [token] = useContext(UserContext)
@@ -16,6 +18,7 @@ export default function Manage_exam() {
     const [loaded, setLoaded] = useState(false)
     const [activeModal, setActiveModal] = useState(false)
     const [id, setId] = useState(null)
+
 
     let navigate = useNavigate();
 
@@ -43,6 +46,7 @@ export default function Manage_exam() {
     const handleUpdate = async (id) => {
         setId(id);
         navigate('/Create_exam',{state:{id:id}})
+
       };
 
     return (
@@ -87,10 +91,12 @@ export default function Manage_exam() {
                     </tbody>
                 </table>
             ) : (
-                <p>Loading</p>
+                <div sx={{mx:'auto',width: '100%',}}>
+                <p sx={{mb:2}}>Loading</p>
+                <LinearProgress color="inherit" />
+                </div>
             )}
             </>
-
         </div>
 
     )

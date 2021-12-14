@@ -104,9 +104,9 @@ export default function ExamModal({ active, handleModal, token, id, setErrorMess
                     <h1 className="modal-card-title has-text-centered">
                         {id ? "แก้ไขหัวข้อสอบ" : "สร้างหัวข้อสอบ"}
                     </h1>
+                    <button className="delete" aria-label="close" onClick={handleModal}></button>
                 </header>
                 <section className="modal-card-body">
-                    <form >
                         <Box component="form"
                             sx={{
                                 '& .MuiTextField-root': { m: 1, width: '100%' },
@@ -196,10 +196,9 @@ export default function ExamModal({ active, handleModal, token, id, setErrorMess
                                 </Box>
                             </div>
                         </Box>
-                    </form>
                 </section>
                 
-                <footer className="modal-card-foot has-background-primary-light">
+                <footer className="modal-card-foot">
                 <ErrorMessage message={errorMessage}/>
                     {id ? (
                         <Button className="Button is-info" onClick={handleUpdateExam} >

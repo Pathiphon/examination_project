@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react'
 import Manage_exam_full from '../img/manage_exam_full.png'
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate,useLocation,useParams } from 'react-router-dom';
 import ExamModal from './ExamModal'
 import QModal from './QModal';
 import { UserContext } from "../context/UserContext"
 import dayjs from 'dayjs'
+import Table_Ques from './Table_Ques';
 import Manage_exam from './Manage_exam';
 
 import Button from '@mui/material/Button';
@@ -23,7 +24,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArticleIcon from '@mui/icons-material/Article';
 
 
-export default function Create_exam() {
+export default function Create_exam({data}) {
     const [activeModal, setActiveModal] = useState(false)
     const [activeModalQ,setActiveModalQ] = useState(false)
     const [headerName, setHeaderName] = useState("")
@@ -33,10 +34,12 @@ export default function Create_exam() {
     const [errorMessage, setErrorMessage] = useState("")
     const [exam, setExam] = useState(null)
     const [id, setId] = useState(null)
+    const [ques_id,setQues_id]= useState(null)
     const [token] = useContext(UserContext)
-
+    
     const location = useLocation();
-    console.log(location);
+
+    
     let navigate = useNavigate();
     
 
@@ -45,8 +48,7 @@ export default function Create_exam() {
         get_Exam()
     }
     const handleModalQ = () =>{
-        setActiveModalQ(!activeModalQ);
-        console.log(activeModalQ);
+        setActiveModalQ(!activeModalQ)
     }
 
     const Id_toperent = (id) => {
@@ -59,11 +61,11 @@ export default function Create_exam() {
     useEffect(() => {
         if (id) {
             get_Exam()
-        }else if(location.state!==null){
+        }
+        if(location.state!==null){
             setId(location.state.id)
         }
-        console.log(id);
-    })
+    },[id])
     const get_Exam = async () => {
         const requestOptions = {
             method: "GET",
@@ -83,7 +85,11 @@ export default function Create_exam() {
             setDate_last_updated(data.date_last_updated)
         }
 
-    }
+    }  
+
+    const get_modal_create_exam = ()=>{
+        setActiveModalQ(!activeModalQ)
+      }
 
     return (
         <Box>
@@ -99,6 +105,7 @@ export default function Create_exam() {
                 active={activeModalQ}
                 handleModalQ={handleModalQ}
                 token={token}
+                ques_id={ques_id}
                 heading_id={id}
                 setErrorMessage={setErrorMessage}  
             />
@@ -185,8 +192,13 @@ export default function Create_exam() {
                     </Grid>
 
                 </Box>
+                <Table_Ques 
+                heading_id={id} 
+                get_modal_create_exam={get_modal_create_exam}
+                />
+                
             </Box>
-
+            
         </Box>
     )
 }
