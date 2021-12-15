@@ -145,7 +145,7 @@ export default function QModal({ active, handleModalQ, token, heading_id,ques_id
                 <footer className="modal-card-foot">
                     <ErrorMessage message={errorMessage} />
                     {ques_id ? (
-                        <Button className="Button is-info" >
+                        <Button className="Button is-info" onClick={handleUpdateQuestion}>
                             แก้ไขโจทย์
                         </Button>
                     ) : (

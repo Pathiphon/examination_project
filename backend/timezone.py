@@ -7,10 +7,10 @@ tz = timezone(timedelta(hours = 7))
 date = datetime.now(tz=tz)
 
 # Reading infomation about time zone
-print("Time zone offset: %s" % date.utcoffset())
-print("Time zone name: %s" % date.tzname())
+# print("Time zone offset: %s" % date.utcoffset())
+# print("Time zone name: %s" % date.tzname())
 
-# Display time
-print(date.isoformat(sep = " "))
-print(date.ctime())
-print(date.utcnow())
+# # Display time
+# print(date.isoformat(sep = " "))
+# print(date.ctime())
+# print(date.utcnow())

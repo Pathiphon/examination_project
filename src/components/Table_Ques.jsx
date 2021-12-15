@@ -2,7 +2,7 @@ import { Card } from "@mui/material";
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import QModal from "./QModal";
-
+import Swal from 'sweetalert2'
 import {
   Divider,
   Chip,
@@ -25,6 +25,8 @@ export default function Table_Ques({ heading_id,get_modal_create_exam }) {
 
   const [errorMessage, setErrorMessage] = useState("");
 
+  
+  
   const get_Question = async () => {
     const requestOptions = {
       method: "GET",
@@ -87,7 +89,7 @@ export default function Table_Ques({ heading_id,get_modal_create_exam }) {
                     }}
                   >
                     <CardContent>
-                      <Typography component="div" variant="h5">
+                      <Typography component="div" variant="h6">
                         คำถาม : {All_questions.question}
                       </Typography>
                       <Divider sx={{ m: 1 }} />

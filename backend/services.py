@@ -162,3 +162,22 @@ async def get_exam_question(exam_question_id: int, exam_heading: id, db: _orm.Se
     exam_question = await _exam_question_selector(exam_question_id=exam_question_id, exam_heading=exam_heading, db=db)
 
     return _schemas.Exam_question.from_orm(exam_question)
+
+async def delete_exam_question(exam_question_id:int,exam_heading:_schemas.Exam_heading,db: _orm.Session):
+    exam_question = await _exam_question_selector(exam_question_id,exam_heading,db)
+
+    db.delete(exam_question)
+    db.commit()
+
+async def update_exam_question(exam_question_id:int , exam_question:_schemas.Exam_questionCreate,exam_heading:_schemas.Exam_heading,db:_orm.Session):
+    exam_question_db = await _exam_question_selector(exam_question_id,exam_heading,db)
+
+    exam_question_db.question = exam_question.question
+    exam_question_db.consider_bool = exam_question.consider_bool
+
+    db.commit()
+    db.refresh(exam_question_db)
+
+    return _schemas.Exam_question.from_orm(exam_question_db)
+
+#*******************************คำตอบ*******************************************

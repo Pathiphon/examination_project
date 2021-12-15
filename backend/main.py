@@ -113,3 +113,22 @@ async def get_exam_question(
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
     return await _services.get_exam_question(exam_question_id, exam_heading_id, db)
+
+@app.delete("/api/exam_headings/{exam_heading_id}/exam_questions/{exam_question_id}",status_code=204)
+async def delete_exam_question(
+    exam_question_id:int,
+    exam_heading_id:int,
+    db:_orm.Session = _fastapi.Depends(_services.get_db),
+):
+    await _services.delete_exam_question(exam_question_id,exam_heading_id,db)
+    return {"message","Successfully Deleted"}
+
+@app.put("/api/exam_headings/{exam_heading_id}/exam_questions/{exam_question_id}",status_code=200)
+async def update_exam_question(
+    exam_question_id:int,
+    exam_question:_schemas.Exam_questionCreate,
+    exam_heading_id:int,
+    db:_orm.Session = _fastapi.Depends(_services.get_db),
+):
+    await _services.update_exam_question(exam_question_id,exam_question,exam_heading_id,db)
+    return {"message","Successfully Updated"}

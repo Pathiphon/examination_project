@@ -1,6 +1,8 @@
 import React from "react"
+import Alert from '@mui/material/Alert';
 
 const ErrorMessage =({message})=>(
-    <p className="" style={{ color: "red" }}>{message}</p>
+        <Alert severity="error">{message}</Alert>    
+    
 )
 export default ErrorMessage;
