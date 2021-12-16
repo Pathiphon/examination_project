@@ -56,3 +56,19 @@ class Exam_question(_Exam_questionBase):
 
     class Config:
         orm_mode = True
+
+#******************คำตอบ*********************
+class _Exam_answerBase(_pydantic.BaseModel):
+    answer:str
+    score:int
+
+class Exam_answerCreate(_Exam_answerBase):
+    pass
+
+class Exam_answer(_Exam_answerBase):
+    ans_id:int
+    ques_id:int
+    score:int
+
+    class Config:
+        orm_mode = True

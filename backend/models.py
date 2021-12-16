@@ -2,7 +2,7 @@ import datetime as _dt
 import timezone as tz
 from sqlalchemy import Table,Column
 from sqlalchemy.sql.schema import ForeignKey
-from sqlalchemy.sql.sqltypes import Boolean, DateTime, Integer,String
+from sqlalchemy.sql.sqltypes import Boolean, DateTime, Integer,String,Text
 import sqlalchemy as _sql
 from sqlalchemy.schema import Column
 import sqlalchemy.orm as _orm
@@ -14,7 +14,8 @@ import database as _database
 class User(_database.Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
+    email = Column(String(255), unique=True, index=True)
+    # email = Column(String(255))
     hashed_password = Column(String(255))
     firstname = Column(String(255))
     lastname = Column(String(255))
@@ -46,4 +47,10 @@ class Exam_question(_database.Base):
 
     # exam_headings = _orm.relationship("Exam_heading", back_populates="exam_questions")
 
+class Exam_Answer(_database.Base):
+    __tablename__="exam_answers"
+    ans_id = Column(Integer,primary_key=True,index=True)
+    ques_id = Column(Integer,ForeignKey('exam_questions.ques_id'))
+    answer = Column(Text)
+    score = Column(Integer)
     

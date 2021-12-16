@@ -53,11 +53,17 @@ export default function Table_Ques({ heading_id,get_modal_create_exam }) {
     }
   });
 
-  const handleModalQ = async (id) =>{
-    setQues_id(id)
+  const handleModalQ = async () =>{
     get_Question()
     get_modal_create_exam(!activeModalQ)
     setActiveModalQ(!activeModalQ);
+    setQues_id(null)
+ 
+}
+const handleClickQ = async(id) =>{
+  setQues_id(id)
+  setActiveModalQ(true)
+  get_modal_create_exam(!activeModalQ)
 }
 
 
@@ -105,7 +111,7 @@ export default function Table_Ques({ heading_id,get_modal_create_exam }) {
                     
                       variant="outlined"
                       color="warning"
-                      startIcon={<EditIcon />} onClick={() => handleModalQ(All_questions.ques_id)}
+                      startIcon={<EditIcon />} onClick={() => handleClickQ(All_questions.ques_id)}
                     >
                       แก้ไข
                     </Button>

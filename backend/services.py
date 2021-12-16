@@ -181,3 +181,48 @@ async def update_exam_question(exam_question_id:int , exam_question:_schemas.Exa
     return _schemas.Exam_question.from_orm(exam_question_db)
 
 #*******************************คำตอบ*******************************************
+async def create_exam_answer(exam_question: id, db: _orm.Session, exam_answer: _schemas.Exam_answerCreate):
+    exam_answer = _models.Exam_Answer(**exam_answer.dict(), ques_id=exam_question)
+    db.add(exam_answer)
+    db.commit()
+    db.refresh(exam_answer)
+    return _schemas.Exam_answer.from_orm(exam_answer)
+
+async def get_exam_answers(exam_question:id, db: _orm.Session):
+    exam_answers = db.query(_models.Exam_Answer).filter_by(ques_id=exam_question)
+    return list(map(_schemas.Exam_answer.from_orm, exam_answers))
+
+async def _exam_answer_selector(exam_answer_id: int, exam_question: id, db: _orm.Session):
+    exam_answer = (
+        db.query(_models.Exam_Answer)
+        .filter_by(ques_id=exam_question)
+        .filter(_models.Exam_Answer.ans_id == exam_answer_id)
+        .first()
+    )
+
+    if exam_answer is None:
+        raise _fastapi.HTTPException(status_code=404, detail="Exam_answer does not exist")
+
+    return exam_answer
+
+async def get_exam_answer(exam_answer_id: int, exam_question: id, db: _orm.Session):
+    exam_answer = await _exam_answer_selector(exam_answer_id=exam_answer_id, exam_question=exam_question, db=db)
+
+    return _schemas.Exam_answer.from_orm(exam_answer)
+
+async def delete_exam_answer(exam_answer_id:int,exam_question:_schemas.Exam_question,db: _orm.Session):
+    exam_answer = await _exam_answer_selector(exam_answer_id,exam_question,db)
+
+    db.delete(exam_answer)
+    db.commit()
+
+async def update_exam_answer(exam_answer_id:int , exam_answer:_schemas.Exam_answerCreate,exam_question:_schemas.Exam_question,db:_orm.Session):
+    exam_answer_db = await _exam_answer_selector(exam_answer_id,exam_question,db)
+
+    exam_answer_db.answer =exam_answer_db.answer+","+ exam_answer.answer
+    exam_answer_db.score = exam_answer.score
+
+    db.commit()
+    db.refresh(exam_answer_db)
+
+    return _schemas.Exam_answer.from_orm(exam_answer_db)

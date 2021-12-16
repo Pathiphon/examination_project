@@ -80,9 +80,9 @@ export default function Create_exam({data}) {
         } else {
             const data = await response.json()
             setHeaderName(data.headerName)
-            setDate_pre(data.date_pre)
-            setDate_post(data.date_post)
-            setDate_last_updated(data.date_last_updated)
+            setDate_pre(dayjs(data.date_pre).format('DD/MM/YYYY HH:mm'))
+            setDate_post(dayjs(data.date_post).format('DD/MM/YYYY HH:mm'))
+            setDate_last_updated(dayjs(data.date_last_updated).format('DD/MM/YYYY HH:mm'))
         }
 
     }  
@@ -142,7 +142,7 @@ export default function Create_exam({data}) {
                                 หัวข้อสอบ : {id ? (headerName) : (<h6>-</h6>)}
                             </Typography>
                             <Typography variant="subtitle1" color="text.secondary" sx={{ display: 'flex' }} component="div" className="mb-1">
-                                ระยะเวลาทำข้อสอบ : {id ? (dayjs(date_pre).format('DD/MM/YYYY HH:MM')) + "  -  " + (dayjs(date_post).format('DD-MM-YYYY HH:MM')) : (<Typography>-</Typography>)}
+                                ระยะเวลาทำข้อสอบ : {id ? <>{date_pre}  -  {date_post}</> : (<Typography>-</Typography>)}
                             </Typography>
                             <Typography variant="subtitle1" sx={{ display: 'flex' }} color="text.secondary" component="div">
                                 แก้ไขล่าสุดเมื่อ : {id ? (date_last_updated) : (<Typography> - </Typography>)}

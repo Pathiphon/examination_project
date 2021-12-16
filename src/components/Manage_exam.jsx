@@ -61,11 +61,13 @@ export default function Manage_exam() {
             {loaded && exam ? (
                 <table className="table">
                     <thead>
+                        <tr>
                         <th>หัวข้อสอบ</th>
                         <th>จำนวนข้อ</th>
                         <th>เวลาเริ่มสอบ</th>
                         <th>เวลาหมดสอบ</th>
                         <th>แก้ไขล่าสุด</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {exam.map((exams) => (

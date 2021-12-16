@@ -52,7 +52,9 @@ return (
                 />
             </div>
             <div>
+              {errorMessage?(
                 <ErrorMessage message={errorMessage}/>
+                ):(<></>)}
             </div>
             <Button variant="contained" color="success" type="submit">เข้าสู่ระแบบ</Button>
         </form>

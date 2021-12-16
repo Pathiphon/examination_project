@@ -8,7 +8,7 @@ import ErrorMessage from './ErrorMessage';
 
 export default function ExamModal({ active, handleModal, token, id, setErrorMessage,Id_toperent }) {
     const [headerName, setHeaderName] = useState("")
-    const [errorMessage,] = useState("");
+    const [errorMes,setErrorMes] = useState("");
     const [date_pre, setDate_pre] = useState("")
     const [time_pre, setTime_pre] = useState("")
     const [date_post, setDate_post] = useState("")
@@ -37,7 +37,7 @@ export default function ExamModal({ active, handleModal, token, id, setErrorMess
         };
         const response =await fetch("/api/exam_heading",requestOptions)
         if(!response.ok){
-            setErrorMessage("มีข้อผิดพลาดในการเพิ่มข้อมูล")
+            setErrorMes("มีข้อผิดพลาดในการเพิ่มข้อมูล")
         }else{
             const data = await response.json()
             Id_toperent(data.id)
@@ -62,7 +62,7 @@ export default function ExamModal({ active, handleModal, token, id, setErrorMess
         };
         const response = await fetch(`/api/exam_headings/${id}`, requestOptions);
         if (!response.ok) {
-          setErrorMessage("Something went wrong when updating Exam");
+            setErrorMes("Something went wrong when updating Exam");
         } else {
           handleModal();
         }
@@ -199,7 +199,11 @@ export default function ExamModal({ active, handleModal, token, id, setErrorMess
                 </section>
                 
                 <footer className="modal-card-foot">
-                <ErrorMessage message={errorMessage}/>
+                    <div>
+                {errorMes?(
+                <ErrorMessage message={errorMes}/>
+                ):(<></>)}
+                </div>
                     {id ? (
                         <Button className="Button is-info" onClick={handleUpdateExam} >
                             แก้ไข
