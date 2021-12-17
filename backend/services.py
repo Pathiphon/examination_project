@@ -1,7 +1,9 @@
 import fastapi as _fastapi
 import fastapi.security as _security
 import jwt as _jwt
+from sqlalchemy.sql.operators import asc_op
 import uvicorn
+from sqlalchemy import desc,asc
 import datetime as _dt
 import timezone as tz
 import datetime as _dt
@@ -189,7 +191,7 @@ async def create_exam_answer(exam_question: id, db: _orm.Session, exam_answer: _
     return _schemas.Exam_answer.from_orm(exam_answer)
 
 async def get_exam_answers(exam_question:id, db: _orm.Session):
-    exam_answers = db.query(_models.Exam_Answer).filter_by(ques_id=exam_question)
+    exam_answers = db.query(_models.Exam_Answer).filter_by(ques_id=exam_question).order_by(desc(_models.Exam_Answer.score))
     return list(map(_schemas.Exam_answer.from_orm, exam_answers))
 
 async def _exam_answer_selector(exam_answer_id: int, exam_question: id, db: _orm.Session):
@@ -219,7 +221,7 @@ async def delete_exam_answer(exam_answer_id:int,exam_question:_schemas.Exam_ques
 async def update_exam_answer(exam_answer_id:int , exam_answer:_schemas.Exam_answerCreate,exam_question:_schemas.Exam_question,db:_orm.Session):
     exam_answer_db = await _exam_answer_selector(exam_answer_id,exam_question,db)
 
-    exam_answer_db.answer =exam_answer_db.answer+","+ exam_answer.answer
+    exam_answer_db.answer =exam_answer.answer
     exam_answer_db.score = exam_answer.score
 
     db.commit()

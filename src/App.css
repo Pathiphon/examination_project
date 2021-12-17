@@ -1,11 +1,18 @@
 @import url('https://fonts.googleapis.com/css?family=Itim');
 
-/* body {
-  font-family: 'Itim', Itim;
+html {
+  background-color: #F8F8F8;
+} 
+main{
+  background-color: #F8F8F8;
 }
-div{
-  font-family: 'Itim', Itim;
-} */
+body {
+  background-color: #F8F8F8;
+} 
+#root{
+  background-color: #F8F8F8;
+}
+
 .icon_nav{
   color: white;
 }

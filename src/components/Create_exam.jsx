@@ -128,7 +128,7 @@ export default function Create_exam({data}) {
                 </AppBar>
                 )}
             </Box>
-            <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', p: 2 }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
                 <Toolbar />
                 <Card sx={{ display: "flex", borderRadius: 5 }}>
                     <CardMedia
