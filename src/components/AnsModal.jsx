@@ -4,31 +4,76 @@ import {
   TextField,
   Grid,
   Divider,
+  Input,
+  Chip,
   Button,
-
+  FormControl ,
+  IconButton,
 } from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ErrorMessage from "./ErrorMessage";
 import DataUsageIcon from "@mui/icons-material/DataUsage";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 export default function AnsModal({
   active,
+  score_id,
   ans_id,
   ques_id,
-  score,
-  answer,
   handleModalAns,
   token,
 }) {
-  const [answer_sub, setAnswer_sub] = useState(null);
-  const [score_sub, setScore_sub] = useState(null);
+  const [scoreField, setScoreField] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [answerField, setAnswerField] = useState([]);
 
   useEffect(() => {
-    if (active) {
-      setAnswer_sub(answer);
-      setScore_sub(score);
+    if(score_id){
+      get_Answer()
     }
-  }, [active]);
+    if(ques_id&&score_id){
+      get_Score()
+    }
+  }, [score_id,ques_id]);
+
+  const get_Answer = async () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    };
+    const response = await fetch(
+      `/api/exam_scores/${score_id}/exam_answer`,
+      requestOptions
+    );
+    if (!response.ok) {
+      setErrorMessage("Something went wrong.Couldn't load the Answer");
+    } else {
+      const data = await response.json();
+      setAnswerField(data);
+    }
+  };
+  const get_Score = async () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    };
+    const response = await fetch(
+      `/api/exam_questions/${ques_id}/exam_scores/${score_id}`,
+      requestOptions
+    );
+    if (!response.ok) {
+      setErrorMessage("Something went wrong.Couldn't load the Score");
+    } else {
+      const data = await response.json();
+      setScoreField(data.score);
+    }
+  };
 
   const handleUpdateAnswer = async (e) => {
     e.preventDefault();
@@ -39,8 +84,7 @@ export default function AnsModal({
         Authorization: "Bearer " + token,
       },
       body: JSON.stringify({
-        answer: answer_sub,
-        score: score_sub,
+        score: scoreField,
       }),
     };
     const response = await fetch(
@@ -59,7 +103,9 @@ export default function AnsModal({
       <div className="modal-background" onClick={handleModalAns}></div>
       <div className="modal-card">
         <header className="modal-card-head has-text-white-ter">
-          <h1 className="modal-card-title has-text-centered">แก้ไขเฉลย</h1>
+          <h1 className="modal-card-title has-text-centered">
+            {score_id ? <>แก้ไขเฉลย</> : <>เพิ่มเฉลย</>}
+          </h1>
           <button
             className="delete"
             aria-label="close"
@@ -90,8 +136,7 @@ export default function AnsModal({
                 <TextField
                   label="คะแนน"
                   type="number"
-                  value={score_sub}
-                  onChange={(e) => setScore_sub(e.target.value)}
+                  value={scoreField}
                   required
                   variant="standard"
                   color="warning"
@@ -99,24 +144,63 @@ export default function AnsModal({
                 />
               </Grid>
             </Grid>
-            <Divider />
-            <div>
-              <TextField
-                label="เฉลย"
-                placeholder="MultiLine with rows: 2 and rowsMax: 4"
-                value={answer_sub}
-                onChange={(e) => setAnswer_sub(e.target.value)}
-                multiline
-                rows={5}
-                defaultValue=""
-              />
-            </div>
+            <Grid
+              container
+              spacing={2}
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
+            >
+              <Grid item xs={10}>
+                <Input sx={{ width: "100%" }} placeholder="ป้อนเฉลย" />
+              </Grid>
+              <Grid item xs={1}>
+                <IconButton aria-label="delete" color="success">
+                  <AddCircleIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+            <Divider>
+              <Chip label="เฉลยทั้งหมด" />
+            </Divider>
+            {answerField.map((answerFields) => (
+              <Grid
+                container
+                spacing={2}
+                direction="row"
+                justifyContent="flex-start"
+                alignItems="center"
+                key={answerFields.id}
+              >
+                <Grid item xs={10}>
+                <TextField
+          disabled
+
+          defaultValue={answerFields.answer}
+          variant="standard"
+        />
+                </Grid>
+
+                <Grid item xs={1}>
+                  <IconButton aria-label="delete" color="error">
+                    <DeleteForeverIcon />
+                  </IconButton>
+                </Grid>
+                <Grid item xs={1}>
+                  <IconButton aria-label="delete" color="error">
+                    <DeleteForeverIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            ))}
           </Box>
         </section>
 
         <footer className="modal-card-foot">
-          <div>{errorMessage ? <ErrorMessage message={errorMessage} /> : <></>}</div>
-          <Button className="Button is-info" onClick={handleUpdateAnswer}>แก้ไข</Button>
+          <div>
+            {errorMessage ? <ErrorMessage message={errorMessage} /> : <></>}
+          </div>
+          <Button className="Button is-info">แก้ไข</Button>
 
           <Button variant="outlined" color="error">
             ยกเลิก

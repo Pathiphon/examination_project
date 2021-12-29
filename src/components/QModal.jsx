@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import AnsModal from "./AnsModal";
 import {
   Box,
   TextField,
@@ -33,13 +34,12 @@ export default function QModal({
   ques_id,
   setErrorMessage,
 }) {
+  const [activeModalAns, setActiveModalAns] = useState(false);
   const [errorMessage] = useState("");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [score, setScore] = useState("");
   const [consider, setConsider] = useState(true);
-
-  
 
   const handleCreateQuestion = async (e) => {
     e.preventDefault();
@@ -63,7 +63,7 @@ export default function QModal({
     } else {
       handleModalQ();
     }
-  }
+  };
 
   const handleCreateAnswer = async (e) => {
     e.preventDefault();
@@ -84,7 +84,7 @@ export default function QModal({
     );
     if (!response.ok) {
       setErrorMessage("มีข้อผิดพลาดในการเพิ่มข้อมูล");
-    } 
+    }
   };
 
   useEffect(() => {
@@ -138,10 +138,22 @@ export default function QModal({
     }
   };
 
+  const handleModalAns = () => {
+    setActiveModalAns(!activeModalAns);
+  }
+  const handleClickAns = () => {
+    setActiveModalAns(true);
+  };
+
   return (
     <div className={`modal ${active && "is-active"}`}>
       <div className="modal-background" onClick={handleModalQ}></div>
       <div className="modal-card">
+      <AnsModal
+        active={activeModalAns}
+        handleModalAns={handleModalAns}
+        token={token}
+      />
         <header className="modal-card-head has-text-white-ter">
           <h1 className="modal-card-title has-text-centered">
             {ques_id ? "แก้ไขโจทย์" : "เพิ่มโจทย์"}
@@ -185,47 +197,24 @@ export default function QModal({
                 required
               />
             </Box>
-            <Grid
-              container
-              spacing={1}
-              direction="row"
-              justifyContent="flex-start"
-              alignItems="center"
-              
-            >
-              <Grid item xs={0.5}>
-                <EventAvailableIcon
-                  sx={{ color: "action.active", mr: 1, my: 0.5 }}
-                />
-              </Grid>
-              <Grid item xs={7} >
-                <TextField
-                  label="เฉลย"
-                  placeholder="MultiLine with rows: 2 and rowsMax: 4"
-                  value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                  multiline
-                  rows={2}
-                  defaultValue=""
-                />
-              </Grid>
-              <Grid item xs={2} >
-                <TextField label="คะแนน" multiline 
-                value={score}
-                onChange={(e) => setScore(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={2}>
+            {ques_id ? (
+              <Box sx={{ width: "100%",mt:2 }} container display="flex"
+              justifyContent="center"
+              alignItems="center">
                 <Button
-                  variant="contained"
-                  size="small"
-                  container
-                  sx={{ borderRadius: "5px", p: 1 }}
+                  variant="outlined"
+                  color="secondary"
+                  sx={{ width: "75%" }}
+                  startIcon={<AddCircleIcon />}
+                  onClick={() =>
+                    handleClickAns()}
                 >
-                  เพิ่ม <AddCircleIcon sx={{ ml: 0.5 }} onClick={handleCreateAnswer}/>
+                  เพิ่มเฉลย
                 </Button>
-              </Grid>
-            </Grid>
+              </Box>
+            ) : (
+              <></>
+            )}
             <Divider sx={{ m: 1 }} />
           </Box>
           {ques_id ? <Table_Ans ques_id={ques_id} token={token} /> : <></>}

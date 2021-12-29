@@ -18,9 +18,10 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 export default function Table_Ans({ ques_id, token }) {
   const [activeModalAns, setActiveModalAns] = useState(false);
-  const [all_answer, setAll_answer] = useState(null);
+  const [all_score, setall_score] = useState(null);
   const [answer, setAnswer] = useState(null);
   const [score, setScore] = useState(null);
+  const [score_id,setScore_id] =useState(null)
   const [ans_id, setAns_id] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -31,10 +32,8 @@ export default function Table_Ans({ ques_id, token }) {
     setScore(null);
     setAnswer(null);
   };
-  const handleClickAns = (id, answer, score) => {
-    setAns_id(id);
-    setAnswer(answer);
-    setScore(score);
+  const handleClickAns = (score_id) => {
+    setScore_id(score_id)
     setActiveModalAns(true);
   };
 
@@ -47,14 +46,14 @@ export default function Table_Ans({ ques_id, token }) {
       },
     };
     const response = await fetch(
-      `/api/exam_questions/${ques_id}/exam_answer`,
+      `/api/exam_questions/${ques_id}/exam_score`,
       requestOptions
     );
     if (!response.ok) {
       setErrorMessage("Something went wrong.Couldn't load the Answer");
     } else {
       const data = await response.json();
-      setAll_answer(data);
+      setall_score(data);
     }
   };
 
@@ -72,7 +71,7 @@ export default function Table_Ans({ ques_id, token }) {
         Authorization: "Bearer " + token,
       },
     };
-    const response = await fetch(`/api/exam_questions/${ques_id}/exam_answers/${ans_id}`, requestOptions);
+    const response = await fetch(`/api/exam_questions/${ques_id}/exam_scores/${ans_id}`, requestOptions);
     if (!response.ok) {
       setErrorMessage("Failed to delete Answer");
     }
@@ -100,10 +99,8 @@ export default function Table_Ans({ ques_id, token }) {
       <AnsModal
         active={activeModalAns}
         handleModalAns={handleModalAns}
-        ans_id={ans_id}
+        score_id={score_id}
         ques_id={ques_id}
-        answer={answer}
-        score={score}
         token={token}
       />
       <TableContainer>
@@ -116,11 +113,11 @@ export default function Table_Ans({ ques_id, token }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {all_answer ? (
+            {all_score ? (
               <>
-                {all_answer.map((answers) => (
+                {all_score.map((scores) => (
                   <TableRow
-                    key={answers.ans_id}
+                    key={scores.score_id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
@@ -132,10 +129,10 @@ export default function Table_Ans({ ques_id, token }) {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {answers.answer}
+                        
                       </Typography>
                     </TableCell>
-                    <TableCell align="center">{answers.score}</TableCell>
+                    <TableCell align="center">{scores.score}</TableCell>
                     <TableCell align="center">
                       <Button
                         variant="outlined"
@@ -144,9 +141,7 @@ export default function Table_Ans({ ques_id, token }) {
                         startIcon={<EditIcon />}
                         onClick={() =>
                           handleClickAns(
-                            answers.ans_id,
-                            answers.answer,
-                            answers.score
+                            scores.score_id
                           )
                         }
                       >
@@ -158,7 +153,7 @@ export default function Table_Ans({ ques_id, token }) {
                         color="error"
                         size="small"
                         startIcon={<DeleteForeverIcon />}
-                        onClick={()=>handleClickOpen(answers.ans_id,answers.answer)}
+                        onClick={()=>handleClickOpen(scores.score_id,scores.score)}
                       >
                         ลบ
                       </Button>

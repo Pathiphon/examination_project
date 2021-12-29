@@ -47,10 +47,17 @@ class Exam_question(_database.Base):
 
     # exam_headings = _orm.relationship("Exam_heading", back_populates="exam_questions")
 
-class Exam_Answer(_database.Base):
-    __tablename__="exam_answers"
-    ans_id = Column(Integer,primary_key=True,index=True)
+class Exam_Score(_database.Base):
+    __tablename__="score"
+    score_id = Column(Integer,primary_key=True,index=True)
     ques_id = Column(Integer,ForeignKey('exam_questions.ques_id'))
-    answer = Column(Text)
     score = Column(Integer)
+
+class Exam_Answer(_database.Base):
+    __tablename__="answers"
+    ans_id = Column(Integer,primary_key=True,index=True)
+    score_id = Column(Integer,ForeignKey('score.score_id'))
+    answer = Column(Text)
+    
+
     

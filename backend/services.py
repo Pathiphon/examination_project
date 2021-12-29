@@ -182,22 +182,68 @@ async def update_exam_question(exam_question_id:int , exam_question:_schemas.Exa
 
     return _schemas.Exam_question.from_orm(exam_question_db)
 
+#*******************************คะแนน*******************************************
+async def create_exam_score(exam_question: id, db: _orm.Session, exam_score: _schemas.Exam_scoreCreate):
+    exam_score = _models.Exam_Score(**exam_score.dict(), ques_id=exam_question)
+    db.add(exam_score)
+    db.commit()
+    db.refresh(exam_score)
+    return _schemas.Exam_score.from_orm(exam_score)
+
+async def get_exam_scores(exam_question:id, db: _orm.Session):
+    exam_scores = db.query(_models.Exam_Score).filter_by(ques_id=exam_question).order_by(desc(_models.Exam_Score.score))
+    return list(map(_schemas.Exam_score.from_orm, exam_scores))
+
+async def _exam_score_selector(exam_score_id: int, exam_question: id, db: _orm.Session):
+    exam_score = (
+        db.query(_models.Exam_Score)
+        .filter_by(ques_id=exam_question)
+        .filter(_models.Exam_Score.score_id == exam_score_id)
+        .first()
+    )
+
+    if exam_score is None:
+        raise _fastapi.HTTPException(status_code=404, detail="Exam_Score does not exist")
+
+    return exam_score
+
+async def get_exam_score(exam_score_id: int, exam_question: id, db: _orm.Session):
+    exam_score = await _exam_score_selector(exam_score_id=exam_score_id, exam_question=exam_question, db=db)
+
+    return _schemas.Exam_score.from_orm(exam_score)
+
+async def delete_exam_score(exam_score_id:int,exam_question:_schemas.Exam_question,db: _orm.Session):
+    exam_score = await _exam_score_selector(exam_score_id,exam_question,db)
+
+    db.delete(exam_score)
+    db.commit()
+
+async def update_exam_score(exam_score_id:int , exam_score:_schemas.Exam_scoreCreate,exam_question:_schemas.Exam_question,db:_orm.Session):
+    exam_score_db = await _exam_score_selector(exam_score_id,exam_question,db)
+
+    exam_score_db.score = exam_score.score
+
+    db.commit()
+    db.refresh(exam_score_db)
+
+    return _schemas.Exam_score.from_orm(exam_score_db)
+
 #*******************************คำตอบ*******************************************
-async def create_exam_answer(exam_question: id, db: _orm.Session, exam_answer: _schemas.Exam_answerCreate):
-    exam_answer = _models.Exam_Answer(**exam_answer.dict(), ques_id=exam_question)
+async def create_exam_answer(exam_score: id, db: _orm.Session, exam_answer: _schemas.Exam_answerCreate):
+    exam_answer = _models.Exam_Answer(**exam_answer.dict(), score_id=exam_score)
     db.add(exam_answer)
     db.commit()
     db.refresh(exam_answer)
     return _schemas.Exam_answer.from_orm(exam_answer)
 
-async def get_exam_answers(exam_question:id, db: _orm.Session):
-    exam_answers = db.query(_models.Exam_Answer).filter_by(ques_id=exam_question).order_by(desc(_models.Exam_Answer.score))
+async def get_exam_answers(exam_score:id, db: _orm.Session):
+    exam_answers = db.query(_models.Exam_Answer).filter_by(score_id=exam_score)
     return list(map(_schemas.Exam_answer.from_orm, exam_answers))
 
-async def _exam_answer_selector(exam_answer_id: int, exam_question: id, db: _orm.Session):
+async def _exam_answer_selector(exam_answer_id: int, exam_score: id, db: _orm.Session):
     exam_answer = (
         db.query(_models.Exam_Answer)
-        .filter_by(ques_id=exam_question)
+        .filter_by(score_id=exam_score)
         .filter(_models.Exam_Answer.ans_id == exam_answer_id)
         .first()
     )
@@ -207,22 +253,21 @@ async def _exam_answer_selector(exam_answer_id: int, exam_question: id, db: _orm
 
     return exam_answer
 
-async def get_exam_answer(exam_answer_id: int, exam_question: id, db: _orm.Session):
-    exam_answer = await _exam_answer_selector(exam_answer_id=exam_answer_id, exam_question=exam_question, db=db)
+async def get_exam_answer(exam_answer_id: int, exam_score: id, db: _orm.Session):
+    exam_answer = await _exam_answer_selector(exam_answer_id=exam_answer_id, exam_score=exam_score, db=db)
 
     return _schemas.Exam_answer.from_orm(exam_answer)
 
-async def delete_exam_answer(exam_answer_id:int,exam_question:_schemas.Exam_question,db: _orm.Session):
-    exam_answer = await _exam_answer_selector(exam_answer_id,exam_question,db)
+async def delete_exam_answer(exam_answer_id:int,exam_score:_schemas.Exam_score,db: _orm.Session):
+    exam_answer = await _exam_answer_selector(exam_answer_id,exam_score,db)
 
     db.delete(exam_answer)
     db.commit()
 
-async def update_exam_answer(exam_answer_id:int , exam_answer:_schemas.Exam_answerCreate,exam_question:_schemas.Exam_question,db:_orm.Session):
-    exam_answer_db = await _exam_answer_selector(exam_answer_id,exam_question,db)
+async def update_exam_answer(exam_answer_id:int , exam_answer:_schemas.Exam_answerCreate,exam_score:_schemas.Exam_score,db:_orm.Session):
+    exam_answer_db = await _exam_answer_selector(exam_answer_id,exam_score,db)
 
     exam_answer_db.answer =exam_answer.answer
-    exam_answer_db.score = exam_answer.score
 
     db.commit()
     db.refresh(exam_answer_db)

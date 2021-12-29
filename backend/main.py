@@ -133,45 +133,88 @@ async def update_exam_question(
     await _services.update_exam_question(exam_question_id,exam_question,exam_heading_id,db)
     return {"message","Successfully Updated"}
 
-#****************** คำตอบ ******************************
-@app.post("/api/exam_questions/{exam_question_id}/exam_answer", response_model=_schemas.Exam_answer)
-async def create_exam_answer(
-    exam_answer: _schemas.Exam_answerCreate,
+#****************** คะแนน ******************************
+@app.post("/api/exam_questions/{exam_question_id}/exam_score", response_model=_schemas.Exam_score)
+async def create_exam_score(
+    exam_score: _schemas.Exam_scoreCreate,
     exam_question_id:int,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    return await _services.create_exam_answer(exam_question=exam_question_id, db=db,exam_answer=exam_answer)
+    return await _services.create_exam_score(exam_question=exam_question_id, db=db,exam_score=exam_score)
 
-@app.get("/api/exam_questions/{exam_question_id}/exam_answer", response_model=List[_schemas.Exam_answer])
-async def get_exam_answers(
+@app.get("/api/exam_questions/{exam_question_id}/exam_score", response_model=List[_schemas.Exam_score])
+async def get_exam_scores(
     exam_question_id: int,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    return await _services.get_exam_answers(exam_question=exam_question_id, db=db)
+    return await _services.get_exam_scores(exam_question=exam_question_id, db=db)
 
-@app.get("/api/exam_questions/{exam_question_id}/exam_answers/{exam_answer_id}", status_code=200)
-async def get_exam_answer(
-    exam_answer_id: int,
+@app.get("/api/exam_questions/{exam_question_id}/exam_scores/{exam_score_id}", status_code=200)
+async def get_exam_score(
+    exam_score_id: int,
     exam_question_id:int,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    return await _services.get_exam_answer(exam_answer_id, exam_question_id, db)
+    return await _services.get_exam_score(exam_score_id, exam_question_id, db)
 
-@app.delete("/api/exam_questions/{exam_question_id}/exam_answers/{exam_answer_id}",status_code=204)
-async def delete_exam_answer(
-    exam_answer_id:int,
+@app.delete("/api/exam_questions/{exam_question_id}/exam_scores/{exam_score_id}",status_code=204)
+async def delete_exam_score(
+    exam_score_id:int,
     exam_question_id:int,
     db:_orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    await _services.delete_exam_answer(exam_answer_id,exam_question_id,db)
+    await _services.delete_exam_score(exam_score_id,exam_question_id,db)
     return {"message","Successfully Deleted"}
 
-@app.put("/api/exam_questions/{exam_question_id}/exam_answers/{exam_answer_id}",status_code=200)
+@app.put("/api/exam_questions/{exam_question_id}/exam_scores/{exam_score_id}",status_code=200)
+async def update_exam_score(
+    exam_score_id:int,
+    exam_score:_schemas.Exam_scoreCreate,
+    exam_question_id:int,
+    db:_orm.Session = _fastapi.Depends(_services.get_db),
+):
+    await _services.update_exam_score(exam_score_id,exam_score,exam_question_id,db)
+    return {"message","Successfully Updated"}
+
+#****************** คำตอบ ******************************
+@app.post("/api/exam_scores/{exam_score_id}/exam_answer", response_model=_schemas.Exam_answer)
+async def create_exam_answer(
+    exam_answer: _schemas.Exam_answerCreate,
+    exam_score_id:int,
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    return await _services.create_exam_answer(exam_score=exam_score_id, db=db,exam_answer=exam_answer)
+
+@app.get("/api/exam_scores/{exam_score_id}/exam_answer", response_model=List[_schemas.Exam_answer])
+async def get_exam_answers(
+    exam_score_id: int,
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    return await _services.get_exam_answers(exam_score=exam_score_id, db=db)
+
+@app.get("/api/exam_scores/{exam_score_id}/exam_answers/{exam_answer_id}", status_code=200)
+async def get_exam_answer(
+    exam_answer_id: int,
+    exam_score_id:int,
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    return await _services.get_exam_answer(exam_answer_id, exam_score_id, db)
+
+@app.delete("/api/exam_scores/{exam_score_id}/exam_answers/{exam_answer_id}",status_code=204)
+async def delete_exam_answer(
+    exam_answer_id:int,
+    exam_score_id:int,
+    db:_orm.Session = _fastapi.Depends(_services.get_db),
+):
+    await _services.delete_exam_answer(exam_answer_id,exam_score_id,db)
+    return {"message","Successfully Deleted"}
+
+@app.put("/api/exam_scores/{exam_score_id}/exam_answers/{exam_answer_id}",status_code=200)
 async def update_exam_answer(
     exam_answer_id:int,
     exam_answer:_schemas.Exam_answerCreate,
-    exam_question_id:int,
+    exam_score_id:int,
     db:_orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    await _services.update_exam_answer(exam_answer_id,exam_answer,exam_question_id,db)
+    await _services.update_exam_answer(exam_answer_id,exam_answer,exam_score_id,db)
     return {"message","Successfully Updated"}
