@@ -75,7 +75,6 @@ export default function Table_Ans({ ques_id, token }) {
     if (!response.ok) {
       setErrorMessage("Failed to delete Answer");
     }
-    console.log(ans_id);
     handleClose()
     get_Answer();
   };

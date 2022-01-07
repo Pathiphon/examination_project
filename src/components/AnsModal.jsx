@@ -12,13 +12,13 @@ import {
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ErrorMessage from "./ErrorMessage";
+import EditIcon from "@mui/icons-material/Edit";
 import DataUsageIcon from "@mui/icons-material/DataUsage";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 export default function AnsModal({
   active,
   score_id,
-  ans_id,
   ques_id,
   handleModalAns,
   token,
@@ -26,17 +26,18 @@ export default function AnsModal({
   const [scoreField, setScoreField] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [answerField, setAnswerField] = useState([]);
+  const [answer,setAnswer] = useState({})
 
   useEffect(() => {
     if(score_id){
-      get_Answer()
+      get_Answers()
     }
     if(ques_id&&score_id){
       get_Score()
     }
   }, [score_id,ques_id]);
 
-  const get_Answer = async () => {
+  const get_Answers = async () => {
     const requestOptions = {
       method: "GET",
       headers: {
@@ -55,6 +56,79 @@ export default function AnsModal({
       setAnswerField(data);
     }
   };
+
+  const get_Answer = async (ans_id) => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    };
+    const response = await fetch(
+      `/api/exam_scores/${score_id}/exam_answers/${ans_id}`,
+      requestOptions
+    );
+    if (!response.ok) {
+      setErrorMessage("Something went wrong.Couldn't load the Answer");
+    } else {
+      const data = await response.json();
+      setAnswer(data);
+    }
+  };
+
+  const createOrEditAnswer = async() =>{
+    if(answer.ans_id){
+      const requestOptions = {
+        method:"PUT" ,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({
+          answer:answer.answer
+        }),
+      };
+       await fetch(
+        `/api/exam_scores/${score_id}/exam_answers/${answer.ans_id}`,
+        requestOptions
+      );
+    }else{
+      const requestOptions = {
+        method:"POST" ,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({
+          answer:answer.answer
+        }),
+      };
+       await fetch(
+        `/api/exam_scores/${score_id}/exam_answer`,
+        requestOptions
+      );
+    }
+    get_Answers()
+    setAnswer({id:0,answer:""})
+    
+    
+  }
+  const deleteAnswer = async(ans_id)=>{
+    const requestOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    };
+    const response = await fetch(`/api/exam_scores/${score_id}/exam_answers/${ans_id}`, requestOptions);
+    if (!response.ok) {
+      setErrorMessage("Failed to delete Answer");
+    }
+    get_Answers()
+  }
+
   const get_Score = async () => {
     const requestOptions = {
       method: "GET",
@@ -75,28 +149,7 @@ export default function AnsModal({
     }
   };
 
-  const handleUpdateAnswer = async (e) => {
-    e.preventDefault();
-    const requestOptions = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-      body: JSON.stringify({
-        score: scoreField,
-      }),
-    };
-    const response = await fetch(
-      `/api/exam_questions/${ques_id}/exam_answers/${ans_id}`,
-      requestOptions
-    );
-    if (!response.ok) {
-      setErrorMessage("Something went wrong when updating Exam");
-    } else {
-      handleModalAns();
-    }
-  };
+  
 
   return (
     <div className={`modal ${active && "is-active"}`}>
@@ -152,11 +205,12 @@ export default function AnsModal({
               alignItems="center"
             >
               <Grid item xs={10}>
-                <Input sx={{ width: "100%" }} placeholder="ป้อนเฉลย" />
+              <Input type="hidden" value={answer.answer_id} />
+                <Input sx={{ width: "100%" }} value={answer.answer} onChange={(e)=>setAnswer({...answer,answer:e.target.value})} placeholder="ป้อนเฉลย" />
               </Grid>
               <Grid item xs={1}>
-                <IconButton aria-label="delete" color="success">
-                  <AddCircleIcon />
+                <IconButton  color="success" onClick={()=>createOrEditAnswer()}>
+                  <AddCircleIcon  />
                 </IconButton>
               </Grid>
             </Grid>
@@ -170,7 +224,7 @@ export default function AnsModal({
                 direction="row"
                 justifyContent="flex-start"
                 alignItems="center"
-                key={answerFields.id}
+                key={answerFields.ans_id}
               >
                 <Grid item xs={10}>
                 <TextField
@@ -182,12 +236,12 @@ export default function AnsModal({
                 </Grid>
 
                 <Grid item xs={1}>
-                  <IconButton aria-label="delete" color="error">
-                    <DeleteForeverIcon />
+                  <IconButton color="warning" onClick={()=>get_Answer(answerFields.ans_id)}>
+                    <EditIcon />
                   </IconButton>
                 </Grid>
                 <Grid item xs={1}>
-                  <IconButton aria-label="delete" color="error">
+                  <IconButton aria-label="delete" color="error" onClick={()=>deleteAnswer(answerFields.ans_id)}>
                     <DeleteForeverIcon />
                   </IconButton>
                 </Grid>
