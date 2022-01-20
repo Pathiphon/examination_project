@@ -33,7 +33,7 @@ async def get_user_by_email(email: str, db: _orm.Session):
 
 async def create_user(user: _schemas.UserCreate, db: _orm.Session):
     user_obj = _models.User(
-        email=user.email,firstname=user.firstname,lastname=user.lastname, hashed_password=_hash.bcrypt.hash(user.hashed_password)
+        email=user.email,name=user.name, hashed_password=_hash.bcrypt.hash(user.hashed_password)
     )
     db.add(user_obj)
     db.commit()
@@ -69,7 +69,7 @@ async def get_current_user(
 ):
     try:
         payload = _jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        user = db.query(_models.User).get(payload["id"])
+        user = db.query(_models.User).get(payload["T_id"])
     except:
         raise _fastapi.HTTPException(
             status_code=401, detail="Invalid Email or Password"
@@ -80,196 +80,106 @@ async def get_current_user(
 
 # *************************************************************************
 
-async def create_exam_heading(user: _schemas.User, db: _orm.Session, exam_heading: _schemas.Exam_headingCreate):
-    exam_heading = _models.Exam_heading(**exam_heading.dict(), owner_id=user.id)
-    db.add(exam_heading)
+async def create_exam(user: _schemas.User, db: _orm.Session, exam: _schemas.ExamCreate):
+    exam = _models.Exam(**exam.dict(), owner_id=user.T_id)
+    db.add(exam)
     db.commit()
-    db.refresh(exam_heading)
-    return _schemas.Exam_heading.from_orm(exam_heading)
+    db.refresh(exam)
+    return _schemas.Exam.from_orm(exam)
 
 
-async def get_exam_headings(user: _schemas.User, db: _orm.Session):
-    exam_headings = db.query(_models.Exam_heading).filter_by(owner_id=user.id)
+async def get_exams(user: _schemas.User, db: _orm.Session):
+    exams = db.query(_models.Exam).filter_by(owner_id=user.T_id)
 
-    return list(map(_schemas.Exam_heading.from_orm, exam_headings))
+    return list(map(_schemas.Exam.from_orm, exams))
 
 
-async def _exam_heading_selector(exam_heading_id: int, user: _schemas.User, db: _orm.Session):
-    exam_heading = (
-        db.query(_models.Exam_heading)
-        .filter_by(owner_id=user.id)
-        .filter(_models.Exam_heading.id == exam_heading_id)
+async def _exam_selector(exam_id: int, user: _schemas.User, db: _orm.Session):
+    exam = (
+        db.query(_models.Exam)
+        .filter_by(owner_id=user.T_id)
+        .filter(_models.Exam.exam_id == exam_id)
         .first()
     )
 
-    if exam_heading is None:
-        raise _fastapi.HTTPException(status_code=404, detail="Exam_heading does not exist")
+    if exam is None:
+        raise _fastapi.HTTPException(status_code=404, detail="Exam does not exist")
 
-    return exam_heading
-
-
-async def get_exam_heading(exam_heading_id: int, user: _schemas.User, db: _orm.Session):
-    exam_heading = await _exam_heading_selector(exam_heading_id=exam_heading_id, user=user, db=db)
-
-    return _schemas.Exam_heading.from_orm(exam_heading)
+    return exam
 
 
-async def delete_exam_heading(exam_heading_id: int, user: _schemas.User, db: _orm.Session):
-    exam_heading = await _exam_heading_selector(exam_heading_id, user, db)
+async def get_exam(exam_id: int, user: _schemas.User, db: _orm.Session):
+    exam = await _exam_selector(exam_id=exam_id, user=user, db=db)
 
-    db.delete(exam_heading)
+    return _schemas.Exam.from_orm(exam)
+
+
+async def delete_exam(exam_id: int, user: _schemas.User, db: _orm.Session):
+    exam = await _exam_selector(exam_id, user, db)
+
+    db.delete(exam)
     db.commit()
 
-async def update_exam_heading(exam_heading_id: int, exam_heading: _schemas.Exam_headingCreate, user: _schemas.User, db: _orm.Session):
-    exam_heading_db = await _exam_heading_selector(exam_heading_id, user, db)
+async def update_exam(exam_id: int, exam: _schemas.ExamCreate, user: _schemas.User, db: _orm.Session):
+    exam_db = await _exam_selector(exam_id, user, db)
 
-    exam_heading_db.headerName = exam_heading.headerName
-    exam_heading_db.date_pre = exam_heading.date_pre
-    exam_heading_db.date_post = exam_heading.date_post
-    exam_heading_db.date_last_updated = tz.date.isoformat(sep = " ")
+    exam_db.name = exam.name
+    exam_db.exam_status = exam.exam_status
+    exam_db.date_pre = exam.date_pre
+    exam_db.date_post = exam.date_post
+    exam_db.date_last_updated = tz.date.isoformat(sep = " ")
 
     db.commit()
-    db.refresh(exam_heading_db)
+    db.refresh(exam_db)
 
-    return _schemas.Exam_heading.from_orm(exam_heading_db)
+    return _schemas.Exam.from_orm(exam_db)
 
 # *************************ข้อสอบ**********************************************
 
-async def create_exam_question(exam_heading: id, db: _orm.Session, exam_question: _schemas.Exam_questionCreate):
-    exam_question = _models.Exam_question(**exam_question.dict(), heading_id=exam_heading)
-    db.add(exam_question)
+async def create_question(exam: id, db: _orm.Session, question: _schemas.QuestionCreate):
+    question = _models.Question(**question.dict(), exam_id=exam)
+    db.add(question)
     db.commit()
-    db.refresh(exam_question)
-    return _schemas.Exam_question.from_orm(exam_question)
+    db.refresh(question)
+    return _schemas.Question.from_orm(question)
 
-async def get_exam_questions(exam_heading:id, db: _orm.Session):
-    exam_questions = db.query(_models.Exam_question).filter_by(heading_id=exam_heading)
+async def get_questions(exam:id, db: _orm.Session):
+    questions = db.query(_models.Question).filter_by(exam_id=exam)
 
-    return list(map(_schemas.Exam_question.from_orm, exam_questions))
+    return list(map(_schemas.Question.from_orm, questions))
 
-async def _exam_question_selector(exam_question_id: int, exam_heading: id, db: _orm.Session):
-    exam_question = (
-        db.query(_models.Exam_question)
-        .filter_by(heading_id=exam_heading)
-        .filter(_models.Exam_question.ques_id == exam_question_id)
+async def _question_selector(question_id: int, exam: id, db: _orm.Session):
+    question = (
+        db.query(_models.Question)
+        .filter_by(exam_id=exam)
+        .filter(_models.Question.ques_id == question_id)
         .first()
     )
 
-    if exam_question is None:
-        raise _fastapi.HTTPException(status_code=404, detail="Exam_question does not exist")
+    if question is None:
+        raise _fastapi.HTTPException(status_code=404, detail="question does not exist")
 
-    return exam_question
+    return question
 
-async def get_exam_question(exam_question_id: int, exam_heading: id, db: _orm.Session):
-    exam_question = await _exam_question_selector(exam_question_id=exam_question_id, exam_heading=exam_heading, db=db)
+async def get_question(question_id: int, exam: id, db: _orm.Session):
+    question = await _question_selector(question_id=question_id, exam=exam, db=db)
 
-    return _schemas.Exam_question.from_orm(exam_question)
+    return _schemas.Question.from_orm(question)
 
-async def delete_exam_question(exam_question_id:int,exam_heading:_schemas.Exam_heading,db: _orm.Session):
-    exam_question = await _exam_question_selector(exam_question_id,exam_heading,db)
+async def delete_question(question_id:int,exam:_schemas.Exam,db: _orm.Session):
+    question = await _question_selector(question_id,exam,db)
 
-    db.delete(exam_question)
+    db.delete(question)
     db.commit()
 
-async def update_exam_question(exam_question_id:int , exam_question:_schemas.Exam_questionCreate,exam_heading:_schemas.Exam_heading,db:_orm.Session):
-    exam_question_db = await _exam_question_selector(exam_question_id,exam_heading,db)
+async def update_question(question_id:int , question:_schemas.QuestionCreate,exam:_schemas.Exam,db:_orm.Session):
+    question_db = await _question_selector(question_id,exam,db)
 
-    exam_question_db.question = exam_question.question
-    exam_question_db.consider_bool = exam_question.consider_bool
-
-    db.commit()
-    db.refresh(exam_question_db)
-
-    return _schemas.Exam_question.from_orm(exam_question_db)
-
-#*******************************คะแนน*******************************************
-async def create_exam_score(exam_question: id, db: _orm.Session, exam_score: _schemas.Exam_scoreCreate):
-    exam_score = _models.Exam_Score(**exam_score.dict(), ques_id=exam_question)
-    db.add(exam_score)
-    db.commit()
-    db.refresh(exam_score)
-    return _schemas.Exam_score.from_orm(exam_score)
-
-async def get_exam_scores(exam_question:id, db: _orm.Session):
-    exam_scores = db.query(_models.Exam_Score).filter_by(ques_id=exam_question).order_by(desc(_models.Exam_Score.score))
-    return list(map(_schemas.Exam_score.from_orm, exam_scores))
-
-async def _exam_score_selector(exam_score_id: int, exam_question: id, db: _orm.Session):
-    exam_score = (
-        db.query(_models.Exam_Score)
-        .filter_by(ques_id=exam_question)
-        .filter(_models.Exam_Score.score_id == exam_score_id)
-        .first()
-    )
-
-    if exam_score is None:
-        raise _fastapi.HTTPException(status_code=404, detail="Exam_Score does not exist")
-
-    return exam_score
-
-async def get_exam_score(exam_score_id: int, exam_question: id, db: _orm.Session):
-    exam_score = await _exam_score_selector(exam_score_id=exam_score_id, exam_question=exam_question, db=db)
-
-    return _schemas.Exam_score.from_orm(exam_score)
-
-async def delete_exam_score(exam_score_id:int,exam_question:_schemas.Exam_question,db: _orm.Session):
-    exam_score = await _exam_score_selector(exam_score_id,exam_question,db)
-
-    db.delete(exam_score)
-    db.commit()
-
-async def update_exam_score(exam_score_id:int , exam_score:_schemas.Exam_scoreCreate,exam_question:_schemas.Exam_question,db:_orm.Session):
-    exam_score_db = await _exam_score_selector(exam_score_id,exam_question,db)
-
-    exam_score_db.score = exam_score.score
+    question_db.question = question.question
+    question_db.persent_checking = question.persent_checking
 
     db.commit()
-    db.refresh(exam_score_db)
+    db.refresh(question_db)
 
-    return _schemas.Exam_score.from_orm(exam_score_db)
+    return _schemas.Question.from_orm(question_db)
 
-#*******************************คำตอบ*******************************************
-async def create_exam_answer(exam_score: id, db: _orm.Session, exam_answer: _schemas.Exam_answerCreate):
-    exam_answer = _models.Exam_Answer(**exam_answer.dict(), score_id=exam_score)
-    db.add(exam_answer)
-    db.commit()
-    db.refresh(exam_answer)
-    return _schemas.Exam_answer.from_orm(exam_answer)
-
-async def get_exam_answers(exam_score:id, db: _orm.Session):
-    exam_answers = db.query(_models.Exam_Answer).filter_by(score_id=exam_score)
-    return list(map(_schemas.Exam_answer.from_orm, exam_answers))
-
-async def _exam_answer_selector(exam_answer_id: int, exam_score: id, db: _orm.Session):
-    exam_answer = (
-        db.query(_models.Exam_Answer)
-        .filter_by(score_id=exam_score)
-        .filter(_models.Exam_Answer.ans_id == exam_answer_id)
-        .first()
-    )
-
-    if exam_answer is None:
-        raise _fastapi.HTTPException(status_code=404, detail="Exam_answer does not exist")
-
-    return exam_answer
-
-async def get_exam_answer(exam_answer_id: int, exam_score: id, db: _orm.Session):
-    exam_answer = await _exam_answer_selector(exam_answer_id=exam_answer_id, exam_score=exam_score, db=db)
-
-    return _schemas.Exam_answer.from_orm(exam_answer)
-
-async def delete_exam_answer(exam_answer_id:int,exam_score:_schemas.Exam_score,db: _orm.Session):
-    exam_answer = await _exam_answer_selector(exam_answer_id,exam_score,db)
-
-    db.delete(exam_answer)
-    db.commit()
-
-async def update_exam_answer(exam_answer_id:int , exam_answer:_schemas.Exam_answerCreate,exam_score:_schemas.Exam_score,db:_orm.Session):
-    exam_answer_db = await _exam_answer_selector(exam_answer_id,exam_score,db)
-
-    exam_answer_db.answer =exam_answer.answer
-
-    db.commit()
-    db.refresh(exam_answer_db)
-
-    return _schemas.Exam_answer.from_orm(exam_answer_db)

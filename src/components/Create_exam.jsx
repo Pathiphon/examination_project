@@ -27,7 +27,7 @@ import ArticleIcon from '@mui/icons-material/Article';
 export default function Create_exam({data}) {
     const [activeModal, setActiveModal] = useState(false)
     const [activeModalQ,setActiveModalQ] = useState(false)
-    const [headerName, setHeaderName] = useState("")
+    const [name, setName] = useState("")
     const [date_pre, setDate_pre] = useState("")
     const [date_post, setDate_post] = useState("")
     const [date_last_updated, setDate_last_updated] = useState("")
@@ -74,12 +74,12 @@ export default function Create_exam({data}) {
                 Authorization: "Bearer " + token,
             },
         }
-        const response = await fetch(`/api/exam_headings/${id}`, requestOptions)
+        const response = await fetch(`/api/exams/${id}`, requestOptions)
         if (!response.ok) {
             setErrorMessage("Could not get the Exam");
         } else {
             const data = await response.json()
-            setHeaderName(data.headerName)
+            setName(data.name)
             setDate_pre(dayjs(data.date_pre).format('DD/MM/YYYY HH:mm'))
             setDate_post(dayjs(data.date_post).format('DD/MM/YYYY HH:mm'))
             setDate_last_updated(dayjs(data.date_last_updated).format('DD/MM/YYYY HH:mm'))
@@ -92,7 +92,7 @@ export default function Create_exam({data}) {
       }
 
     return (
-        <Box>
+        <Box className="container">
             <ExamModal
                 active={activeModal}
                 handleModal={handleModal}
@@ -117,7 +117,7 @@ export default function Create_exam({data}) {
                     sx={{ width: `calc(100% )` }} style={{ background: 'white'}}
                 >
                     <Toolbar >
-                        <Button variant="text" size="large" startIcon={<ArrowBackIosIcon />} onClick={handleClick}> จัดการข้อสอบ</Button>
+                        <Button variant="outlined"  size="large" startIcon={<ArrowBackIosIcon />} style={{ fontSize: '18px' }} onClick={handleClick}> จัดการข้อสอบ</Button>
                     </Toolbar>
                 </AppBar>
                 ):(
@@ -136,10 +136,10 @@ export default function Create_exam({data}) {
                         sx={{ width: 150, padding: 1, borderRadius: 5 }}
                         src={Manage_exam_full}
                     />
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }} flexGrow={1}>
                         <CardContent sx={{ flex: '1 0 auto' }}>
                             <Typography component="div" sx={{ display: 'flex' }} variant="h6" className="mb-5" >
-                                หัวข้อสอบ : {id ? (headerName) : (<h6>-</h6>)}
+                                หัวข้อสอบ : {id ? (name) : (<h6>-</h6>)}
                             </Typography>
                             <Typography variant="subtitle1" color="text.secondary" sx={{ display: 'flex' }} component="div" className="mb-1">
                                 ระยะเวลาทำข้อสอบ : {id ? <>{date_pre}  -  {date_post}</> : (<Typography>-</Typography>)}
@@ -149,7 +149,10 @@ export default function Create_exam({data}) {
                             </Typography>
                         </CardContent>
                     </Box>
-                    <Box sx={{ flexDirection: 'column' }} justifyContent="flex-end">
+                    <Box sx={{ p: 2, flexDirection: "column" }}
+                display="flex"
+                alignItems="flex-end"
+                flexGrow={0}>
 
                         <Button variant="outlined" color="warning" className="is-fullwidth"
                             startIcon={<EditIcon />} onClick={() => setActiveModal(true)}>

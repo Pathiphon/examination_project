@@ -1,4 +1,4 @@
-import { TextField } from '@mui/material';
+import { TextField,Typography,InputLabel,Input } from '@mui/material';
 import React, { useState,useContext  } from 'react'
 import Button from '@mui/material/Button';
 import { UserContext } from '../context/UserContext'
@@ -11,7 +11,7 @@ const Register = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [confirmationPassword, setConfirmationPassword] = useState("")
-    const [firstname, setFirstname] = useState("")
+    const [name, setName] = useState("")
     const [lastname, setLastname] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
     const [, setToken] = useContext(UserContext)
@@ -20,7 +20,7 @@ const Register = () => {
         const requestOptions = {
             method: "POST",
             headers:{"Content-Type":"application/json"},
-            body: JSON.stringify({email:email,firstname:firstname,lastname:lastname,hashed_password:password}),
+            body: JSON.stringify({email:email,name:name,hashed_password:password}),
         }
         const response = await fetch("/api/users",requestOptions)
         console.log(response);
@@ -42,48 +42,86 @@ const Register = () => {
         }
     }
     return (
-        <div className="container mx-auto">
-            <Card variant="outlined" sx={{ maxWidth: 400 }} className="container"  >
-            <FormControl onSubmit={handleSubmit} className="container ">
-                <h1 className="mx-auto">สมัครสมาชิก</h1>
-                <div className="mb-3 row px-3">
-                    <TextField  label="ชื่อ" variant="filled" 
-                    value={firstname} 
-                    onChange={(e)=>setFirstname(e.target.value)} required
+        <div className="container w-100 p-4 mx-auto text-center" style={{backgroundColor:"#ffffff",borderRadius: '10px'}}>
+            <form onSubmit={handleSubmit} className="container mx-auto text-center w-100">
+            <Typography
+                    variant="h5"
+                    sx={{ mb: 2 }}
+                    component="div"
+                    style={{ color: "black" }}
+                  >
+                    สมัครสมาชิก
+                  </Typography>
+                  <FormControl 
+                    sx={{ m: 1, width: "80%" }}
+                    className="container"
+                    variant="standard"
+                  >
+                      <InputLabel>ชื่อ - นามสกุล</InputLabel>
+                    <Input   variant="standard" 
+                    value={name} 
+                    onChange={(e)=>setName(e.target.value)} required
                     />
-                </div>
-                <div className="mb-3 row px-3">
-                    <TextField  label="นามสกุล" variant="filled" 
-                    value={lastname} 
-                    onChange={(e)=>setLastname(e.target.value)} required
-                    />
-                </div>
-                <div className="mb-3 row px-3">
-                    <TextField  label="Email Address" variant="filled"
+                </FormControl>
+                <FormControl 
+                    sx={{ m: 1, width: "80%" }}
+                    className="container"
+                    variant="standard"
+                  >
+                      <InputLabel>E-mail</InputLabel>
+                    <Input   variant="standard"
                     value={email} 
                     onChange={(e)=>setEmail(e.target.value)} required
                     />
-                </div>
-                <div className="mb-3 row px-3">
-                    <TextField  label="รหัสผ่าน" variant="filled"
+                </FormControl>
+                <FormControl
+                    sx={{ m: 1, width: "80%" }}
+                    className="container"
+                    variant="standard"
+                  >
+                      <InputLabel>รหัสผ่าน</InputLabel>
+                    <Input  variant="standard"
                     type="password"
                     value={password} 
                     onChange={(e)=>setPassword(e.target.value)} required
                     />
-                </div>
-                <div className="mb-3 row px-3">
-                    <TextField  label="ยืนยันรหัสผ่าน" variant="filled"
+                </FormControl>
+                <FormControl
+                    sx={{ m: 1, width: "80%" }}
+                    className="container"
+                    variant="standard"
+                  >
+                      <InputLabel>ยืนยันรหัสผ่าน</InputLabel>
+                    <Input  variant="standard"
                     type="password"
                     value={confirmationPassword} 
                     onChange={(e)=>setConfirmationPassword(e.target.value)} required
                     />
-                </div>
+                </FormControl>
                 <div>
                     <ErrorMessage message={errorMessage}/>
                 </div>
-                <Button variant="contained" color="success" type="submit" className="w-50 mx-auto mb-2">ยืนยันการสมัคร</Button>
-            </FormControl>
-            </Card>
+                <FormControl
+                    sx={{ m: 3, width: "75%" }}
+                    className="container"
+                    variant="standard"
+                  >
+                  <Button
+                variant="contained"
+                size="large"
+                type="submit"
+                sx={{
+                  backgroundColor: "#000000",
+                  ":hover": {
+                    bgcolor: "#000033",
+                  },
+                  borderRadius: "10px",
+                }}
+              >
+                ยืนยันการสมัคร
+              </Button>
+                  </FormControl>
+            </form>
         </div>
     );
 };

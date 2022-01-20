@@ -1,8 +1,8 @@
 import datetime as _dt
 import timezone as tz
-from sqlalchemy import Table,Column
+from sqlalchemy import Column
 from sqlalchemy.sql.schema import ForeignKey
-from sqlalchemy.sql.sqltypes import Boolean, DateTime, Integer,String,Text
+from sqlalchemy.sql.sqltypes import  Float,Boolean, DateTime, Integer,String,Text
 import sqlalchemy as _sql
 from sqlalchemy.schema import Column
 import sqlalchemy.orm as _orm
@@ -12,52 +12,53 @@ import database as _database
 
 
 class User(_database.Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255), unique=True, index=True)
-    # email = Column(String(255))
+    __tablename__ = "teacher"
+    T_id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(64), unique=True, index=True)
     hashed_password = Column(String(255))
-    firstname = Column(String(255))
-    lastname = Column(String(255))
+    name = Column(String(100))
 
 
-    exam_headings = _orm.relationship("Exam_heading", back_populates="owner")
+    exam = _orm.relationship("Exam", back_populates="owner")
 
     def verify_password(self, password: str):
         return _hash.bcrypt.verify(password, self.hashed_password)
 
-class Exam_heading(_database.Base):
-    __tablename__ = "exam_headings"
-    id = Column(Integer, primary_key=True, index=True)
-    owner_id = Column(Integer, ForeignKey('users.id'))
-    headerName = Column(String(255))
+class Exam(_database.Base):
+    __tablename__ = "exam"
+    exam_id = Column(Integer, primary_key=True, index=True)
+    owner_id = Column(Integer, ForeignKey('teacher.T_id'))
+    name = Column(String(255))
+    exam_status = Column(Boolean)
     date_pre = Column(DateTime)
     date_post = Column(DateTime)
     date_created = Column(DateTime, default=tz.date.isoformat(sep = " "))
     date_last_updated = Column(DateTime, default=tz.date.isoformat(sep = " "))
 
-    owner = _orm.relationship("User", back_populates="exam_headings")
+    owner = _orm.relationship("User", back_populates="exam")
 
-class Exam_question(_database.Base):
-    __tablename__="exam_questions"
+class Question(_database.Base):
+    __tablename__="question"
     ques_id = Column(Integer,primary_key=True,index=True)
-    heading_id = Column(Integer,ForeignKey('exam_headings.id'))
     question = Column(String(255))
-    consider_bool = Column(Boolean)
+    persent_checking = Column(Float(5))
+    
 
     # exam_headings = _orm.relationship("Exam_heading", back_populates="exam_questions")
 
-class Exam_Score(_database.Base):
-    __tablename__="score"
-    score_id = Column(Integer,primary_key=True,index=True)
-    ques_id = Column(Integer,ForeignKey('exam_questions.ques_id'))
-    score = Column(Integer)
+class Exam_Question(_database.Base):
+    __tablename__ = "exam_question"
+    id2 = Column(Integer, primary_key=True, index=True)
+    exam2_id = Column(Integer, ForeignKey('exam.exam_id'))
+    ques2_id = Column(Integer, ForeignKey('question.ques_id'))
+    score_full = Column(Float(5))
 
-class Exam_Answer(_database.Base):
-    __tablename__="answers"
-    ans_id = Column(Integer,primary_key=True,index=True)
-    score_id = Column(Integer,ForeignKey('score.score_id'))
-    answer = Column(Text)
+
+# class Exam_Answer(_database.Base):
+#     __tablename__="answers"
+#     ans_id = Column(Integer,primary_key=True,index=True)
+#     score_id = Column(Integer,ForeignKey('score.score_id'))
+#     answer = Column(Text)
     
 
     

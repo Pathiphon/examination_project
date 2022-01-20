@@ -6,8 +6,7 @@ import pydantic as _pydantic
 
 class _UserBase(_pydantic.BaseModel):
     email: str
-    firstname:str
-    lastname:str
+    name:str
 
 
 class UserCreate(_UserBase):
@@ -18,23 +17,24 @@ class UserCreate(_UserBase):
 
 
 class User(_UserBase):
-    id: int
+    T_id: int
 
     class Config:
         orm_mode = True
 
 
-class _Exam_headingBase(_pydantic.BaseModel):
-    headerName:str
+class _ExamBase(_pydantic.BaseModel):
+    name:str
     date_pre:_dt.datetime
+    exam_status:bool
     date_post:_dt.datetime
 
-class Exam_headingCreate(_Exam_headingBase):
+class ExamCreate(_ExamBase):
     pass
 
 
-class Exam_heading(_Exam_headingBase):
-    id: int
+class Exam(_ExamBase):
+    exam_id: int
     owner_id: int
     date_created: _dt.datetime
     date_last_updated: _dt.datetime
@@ -43,45 +43,31 @@ class Exam_heading(_Exam_headingBase):
         orm_mode = True
 
 # ***************************************
-class _Exam_questionBase(_pydantic.BaseModel):
+class _QuestionBase(_pydantic.BaseModel):
     question:str
-    consider_bool :bool
+    persent_checking :bool
 
-class Exam_questionCreate(_Exam_questionBase):
+class QuestionCreate(_QuestionBase):
     pass
 
-class Exam_question(_Exam_questionBase):
+class Question(_QuestionBase):
     ques_id:int
-    heading_id:int
 
     class Config:
         orm_mode = True
 
-#******************คะแนน*********************
-class _Exam_scoreBase(_pydantic.BaseModel):
-    score:int
 
-class Exam_scoreCreate(_Exam_scoreBase):
-    pass
-
-class Exam_score(_Exam_scoreBase):
-    score_id:int
-    ques_id:int
-
-
-    class Config:
-        orm_mode = True
 
 #******************คำตอบ*********************
-class _Exam_answerBase(_pydantic.BaseModel):
-    answer:str
+# class _Exam_answerBase(_pydantic.BaseModel):
+#     answer:str
 
-class Exam_answerCreate(_Exam_answerBase):
-    pass
+# class Exam_answerCreate(_Exam_answerBase):
+#     pass
 
-class Exam_answer(_Exam_answerBase):
-    ans_id:int
-    score_id:int
+# class Exam_answer(_Exam_answerBase):
+#     ans_id:int
+#     score_id:int
 
-    class Config:
-        orm_mode=True
+#     class Config:
+#         orm_mode=True

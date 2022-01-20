@@ -102,7 +102,7 @@ export default function ExamModal({ active, handleModal, token, id, setErrorMess
             <div className="modal-card">
                 <header className="modal-card-head has-text-white-ter">
                     <h1 className="modal-card-title has-text-centered">
-                        {id ? "แก้ไขหัวข้อสอบ" : "สร้างหัวข้อสอบ"}
+                        {id ? "แก้ไขแบบทดสอบ" : "สร้างแบบทดสอบ"}
                     </h1>
                     <button className="delete" aria-label="close" onClick={handleModal}></button>
                 </header>

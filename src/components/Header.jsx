@@ -6,7 +6,7 @@ import Manage_exam from './Manage_exam'
 import Edit_exam from "./Edit_exam";
 import Create_exam from './Create_exam'
 
-import Box from '@mui/material/Box';
+import {Box,Container} from '@mui/material';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
@@ -33,6 +33,7 @@ const drawerWidth = 220;
 const Header = () => {
   const [token, setToken] = useContext(UserContext)
   const [user, setUser] = useState(null)
+  const [barname,setBarname] =useState(null)
 
 
   const handleLogout = () => {
@@ -40,6 +41,13 @@ const Header = () => {
   }
   const {pathname} = useLocation();
 
+  const pathname_appbar =()=>{
+    switch(pathname){
+      case "/" :setBarname("จัดการข้อสอบ");break;
+      case "/Check_exam" :setBarname("ตรวจข้อสอบ");break;
+      case "/Report" :setBarname("รายงานผลสอบ");break;
+    }
+  }
 
   const fetchUser = async () => {
     const requestOptions = {
@@ -60,7 +68,8 @@ const Header = () => {
   };
   useEffect(() => {
     fetchUser();
-  }, [])
+    pathname_appbar()
+  }, [pathname])
 
   return (
     <>
@@ -77,7 +86,7 @@ const Header = () => {
             >
               <Toolbar >
                 <Typography variant="h6" noWrap component="div" style={{ color: 'black' }}>
-                  Test
+                  {barname}
                   
                 </Typography>
               </Toolbar>
@@ -102,7 +111,7 @@ const Header = () => {
               <Toolbar />
               <FaceIcon className="icon_nav mx-auto svg_icons " />
               {user ?
-                <h6 className="mx-auto pt-3">{user.firstname}&nbsp;&nbsp;{user.lastname}</h6>
+                <h6 className="mx-auto pt-3">{user.name}</h6>
                 :
                 "null"}
               <Divider />
@@ -161,7 +170,7 @@ const Header = () => {
                     <ListItemText primary="จัดการโปรไฟล์" />
                   </ListItem>
                 </Link>
-                <Link className="textDec" to="/Logout">
+                <Link className="textDec" to="/">
                   <ListItem button onClick={handleLogout} >
                     <ListItemIcon>
                       <ExitToAppIcon className="icon_nav" />
@@ -173,18 +182,21 @@ const Header = () => {
               </List>
 
             </Drawer>
-
+            <Toolbar />
+              <Container>
             <Box
+              
               component="main"
-              sx={{ flexGrow: 1, bgcolor: 'background.default', p: 2 }}
+              sx={{  p: 2 }}
             >
-              <Toolbar />
+              
               <Routes>
                 {/* <Route path='/Create_exam' element={<Create_exam/>}/> */}
                 <Route path='/' element={<Manage_exam/>}/>
               </Routes>
               
             </Box>
+            </Container>
            </> ):(
              <div className="w-100" >
              <Create_exam />

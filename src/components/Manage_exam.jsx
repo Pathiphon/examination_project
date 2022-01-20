@@ -1,105 +1,158 @@
-import React, { useContext, useEffect, useState,useRouteMatch } from 'react'
-import dayjs from "dayjs"
-import { useNavigate,Link, Route, Routes  } from 'react-router-dom';
+import React, { useContext, useEffect, useState, useRouteMatch } from "react";
+import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
-import ErrorMessage from "./ErrorMessage"
-import { UserContext } from "../context/UserContext"
+import ErrorMessage from "./ErrorMessage";
+import { UserContext } from "../context/UserContext";
+import Manage_exam_full from "../img/manage_exam_full.png";
 
-import Button from '@mui/material/Button';
-import EditIcon from '@mui/icons-material/Edit';
-import ShareIcon from '@mui/icons-material/Share';
-import LinearProgress from '@mui/material/LinearProgress';
-import Create_exam from './Create_exam';
+import {
+  Button,
+  InputBase,
+  IconButton,
+  Divider,
+  Box,
+  Typography,
+  CardContent,
+  CardMedia,
+  Card,
+  Toolbar,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import SearchIcon from "@mui/icons-material/Search";
+import ShareIcon from "@mui/icons-material/Share";
+import LinearProgress from "@mui/material/LinearProgress";
+import Create_exam from "./Create_exam";
 
 export default function Manage_exam() {
-    const [token] = useContext(UserContext)
-    const [exam, setExam] = useState(null)
-    const [erroorMessage, setErrorMessage] = useState("")
-    const [loaded, setLoaded] = useState(false)
-    const [activeModal, setActiveModal] = useState(false)
-    const [id, setId] = useState(null)
+  const [token] = useContext(UserContext);
+  const [exam, setExam] = useState(null);
+  const [erroorMessage, setErrorMessage] = useState("");
+  const [loaded, setLoaded] = useState(false);
+  const [activeModal, setActiveModal] = useState(false);
+  const [id, setId] = useState(null);
 
+  let navigate = useNavigate();
 
-    let navigate = useNavigate();
-
-    const get_Exam = async () => {
-        const requestOptions = {
-            method: "GET",
-            headers: { 
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + token,
-            },            
-        };
-        const response = await fetch("/api/exam_heading", requestOptions)
-        if (!response.ok) {
-            setErrorMessage("Something went wrong.Couldn't load the Exam")
-        } else {
-            const data = await response.json()
-            setExam(data)
-            setLoaded(true)
-        }
+  const get_Exam = async () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
     };
-    useEffect(() => {
-        get_Exam()
-    }, [])
+    const response = await fetch("/api/exam", requestOptions);
+    if (!response.ok) {
+      setErrorMessage("Something went wrong.Couldn't load the Exam");
+    } else {
+      const data = await response.json();
+      setExam(data);
+      setLoaded(true);
+    }
+  };
+  useEffect(() => {
+    get_Exam();
+  }, []);
 
-    const handleUpdate = async (id) => {
-        setId(id);
-        navigate('/Create_exam',{state:{id:id}})
+  const handleUpdate = async (id) => {
+    setId(id);
+    navigate("/Create_exam", { state: { id: id } });
+  };
 
-      };
-
-    return (
-        <div>
-                <>
-                
-            {/* <Button variant="contained" color="success" type="submit" className="w-50 mx-auto mb-2" 
-            onClick={()=>setActiveModal(true)}>
-                บันทึก
+  return (
+    <div className="container">
+      <InputBase
+        sx={{ ml: 1, flex: 1, width: "80%" }}
+        placeholder="ค้นหาหัวข้อสอบ"
+        inputProps={{ "aria-label": "search google maps" }}
+      />
+      <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
+        <SearchIcon />
+      </IconButton>
+      <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+      <IconButton
+        color="primary"
+        sx={{ p: "10px" }}
+        aria-label="directions"
+      ></IconButton>
+      {exam !== null ? (
+        <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
+          {exam.map((exams) => (
+            <Card sx={{ display: "flex", borderRadius: 5,mb:2 }} key={exams.id}>
+              <CardMedia
+                component="img"
+                sx={{ width: 150, padding: 1, borderRadius: 5 }}
+                src={Manage_exam_full}
+              />
+              <Box
+                sx={{ display: "flex", flexDirection: "column" }}
+                flexGrow={1}
+              >
+                <CardContent sx={{ flex: "1 0 auto" }}>
+                  <Typography
+                    component="div"
+                    sx={{ display: "flex" }}
+                    variant="h6"
+                    className="mb-3"
+                  >
+                    หัวข้อสอบ : {exams.name}
+                  </Typography>
+                  <Box className="mb-2" sx={{ display: "flex" }}>
+                    <Typography
+                      component="div"
+                      variant="subtitle1"
+                      flexGrow={0.3}
+                    >
+                      จำนวนข้อ :
+                    </Typography>
+                    <Typography component="div" variant="subtitle1">
+                      คะแนนเต็ม :
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="subtitle1"
+                    color="text.secondary"
+                    sx={{ display: "flex" }}
+                    component="div"
+                    className="mb-1"
+                  >
+                    ระยะเวลาทำข้อสอบ :{" "}
+                    {dayjs(exams.date_pre).format("DD/MM/YYYY HH:mm")} -{" "}
+                    {dayjs(exams.date_post).format("DD/MM/YYYY HH:mm")}
+                  </Typography>
+                </CardContent>
+              </Box>
+              <Box
+                sx={{ p: 2, flexDirection: "column" }}
+                display="flex"
+                alignItems="flex-end"
+                flexGrow={0}
+              >
+                <Button
+                  variant="outlined"
+                  color="warning" sx={{mb:2}}
+                  startIcon={<EditIcon />}
+                  onClick={() => handleUpdate(exams.exam_id)}
+                >
+                  แก้ไข
                 </Button>
-            <ErrorMessage message={erroorMessage} /> */}
-            {loaded && exam ? (
-                <table className="table">
-                    <thead>
-                        <tr>
-                        <th>หัวข้อสอบ</th>
-                        <th>จำนวนข้อ</th>
-                        <th>เวลาเริ่มสอบ</th>
-                        <th>เวลาหมดสอบ</th>
-                        <th>แก้ไขล่าสุด</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {exam.map((exams) => (
-                            <tr key={exams.id}>
-                                <td>{exams.headerName}</td>
-                                <td>10</td>
-                                <td>{dayjs(exams.date_pre).format('DD/MM/YYYY HH:mm')}</td>
-                                <td>{dayjs(exams.date_post).format('DD/MM/YYYY HH:mm')}</td>
-                                <td>{dayjs(exams.date_last_updated).format('DD/MM/YYYY HH:mm')}</td>
-                                <td>
-                                    <Button variant="outlined" color="warning" startIcon={<EditIcon />}
-                                    onClick={() => handleUpdate(exams.id)}>
-                                        แก้ไข
-                                    </Button>
-                                </td>
-                                <td>
-                                    <Button variant="outlined" startIcon={<ShareIcon />}>
-                                        ส่งลิงค์ข้อสอบ
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            ) : (
-                <div sx={{mx:'auto',width: '100%',}}>
-                <p sx={{mb:2}}>Loading</p>
-                <LinearProgress color="inherit" />
-                </div>
-            )}
-            </>
+                <Button
+                  variant="contained"
+                  startIcon={<ShareIcon />}
+                >
+                  ส่งลิงค์ข้อสอบ
+                </Button>
+              </Box>
+            </Card>
+          ))}
+        </Box>
+      ) : (
+        <div sx={{ mx: "auto", width: "100%" }}>
+          <p sx={{ mb: 2 }}>Loading</p>
+          <LinearProgress color="inherit" />
         </div>
-
-    )
+      )}
+    </div>
+  );
 }
