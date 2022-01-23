@@ -1,6 +1,5 @@
 import datetime as _dt
 
-from pydantic import BaseModel
 from typing import List, Optional
 
 import timezone as tz
@@ -57,6 +56,14 @@ Exam_question = Table('exam_question',_database.Base.metadata,
     Column('ques_id',ForeignKey("question.ques_id"),primary_key=True)
 
 )
+
+class Answer(_database.Base):
+    __tablename__="answer"
+    ans_id = Column(Integer,primary_key=True,index=True)
+    ques_id = Column(Integer,ForeignKey('question.ques_id'))
+    answer = Column(Text)
+    score = Column(Float(5))
+
 # class Exam_Question(_database.Base):
 #     __tablename__ = "exam_question"
 #     id2 = Column(Integer, primary_key=True, index=True)

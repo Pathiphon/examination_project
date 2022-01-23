@@ -117,81 +117,77 @@ async def create_question(
 ):
     return await _services.create_question( db=db,question=question)
 
-@app.get("/api/exams/{exam_id}/question", response_model=List[_schemas.Question])
+@app.get("/api/questions", response_model=List[_schemas.Question])
 async def get_questions(
-    exam_id: int,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    return await _services.get_questions(exam=exam_id, db=db)
+    return await _services.get_questions( db=db)
 
-@app.get("/api/exams/{exam_id}/questions/{question_id}", status_code=200)
+@app.get("/api/questions/{ques_id}", status_code=200)
 async def get_question(
-    question_id: int,
-    exam_id:int,
+    ques_id: int,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    return await _services.get_question(question_id, exam_id, db)
+    return await _services.get_question(ques_id, db)
 
-@app.delete("/api/exams/{exam_id}/questions/{question_id}",status_code=204)
+@app.delete("/api/questions/{ques_id}",status_code=204)
 async def delete_question(
-    question_id:int,
-    exam_id:int,
+    ques_id:int,
     db:_orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    await _services.delete_question(question_id,exam_id,db)
+    await _services.delete_question(ques_id,db)
     return {"message","Successfully Deleted"}
 
-@app.put("/api/exams/{exam_id}/questions/{question_id}",status_code=200)
+@app.put("/api/questions/{ques_id}",status_code=200)
 async def update_question(
-    question_id:int,
+    ques_id:int,
     question:_schemas.QuestionCreate,
-    exam_id:int,
     db:_orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    await _services.update_question(question_id,question,exam_id,db)
+    await _services.update_question(ques_id,question,db)
     return {"message","Successfully Updated"}
 
 
 
 #****************** คำตอบ ******************************
-# @app.post("/api/exam_scores/{exam_score_id}/exam_answer", response_model=_schemas.Exam_answer)
-# async def create_exam_answer(
-#     exam_answer: _schemas.Exam_answerCreate,
-#     exam_score_id:int,
-#     db: _orm.Session = _fastapi.Depends(_services.get_db),
-# ):
-#     return await _services.create_exam_answer(exam_score=exam_score_id, db=db,exam_answer=exam_answer)
+@app.post("/api/questions/{ques_id}/answer", response_model=_schemas.Answer)
+async def create_answer(
+    answer: _schemas.AnswerCreate,
+    ques_id:int,
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    return await _services.create_answer(question=ques_id, db=db,answer=answer)
 
-# @app.get("/api/exam_scores/{exam_score_id}/exam_answer", response_model=List[_schemas.Exam_answer])
-# async def get_exam_answers(
-#     exam_score_id: int,
-#     db: _orm.Session = _fastapi.Depends(_services.get_db),
-# ):
-#     return await _services.get_exam_answers(exam_score=exam_score_id, db=db)
+@app.get("/api/questions/{ques_id}/answers", response_model=List[_schemas.Answer])
+async def get_answers(
+    ques_id: int,
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    return await _services.get_answers(question=ques_id, db=db)
 
-# @app.get("/api/exam_scores/{exam_score_id}/exam_answers/{exam_answer_id}", status_code=200)
-# async def get_exam_answer(
-#     exam_answer_id: int,
-#     exam_score_id:int,
-#     db: _orm.Session = _fastapi.Depends(_services.get_db),
-# ):
-#     return await _services.get_exam_answer(exam_answer_id, exam_score_id, db)
+@app.get("/api/questions/{ques_id}/answers/{ans_id}", status_code=200)
+async def get_answer(
+    ans_id: int,
+    ques_id:int,
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    return await _services.get_answer(ans_id,ques_id, db)
 
-# @app.delete("/api/exam_scores/{exam_score_id}/exam_answers/{exam_answer_id}",status_code=204)
-# async def delete_exam_answer(
-#     exam_answer_id:int,
-#     exam_score_id:int,
-#     db:_orm.Session = _fastapi.Depends(_services.get_db),
-# ):
-#     await _services.delete_exam_answer(exam_answer_id,exam_score_id,db)
-#     return {"message","Successfully Deleted"}
+@app.delete("/api/questions/{ques_id}/answers/{ans_id}",status_code=204)
+async def delete_answer(
+    ans_id:int,
+    ques_id:int,
+    db:_orm.Session = _fastapi.Depends(_services.get_db),
+):
+    await _services.delete_answer(ans_id,ques_id,db)
+    return {"message","Successfully Deleted"}
 
-# @app.put("/api/exam_scores/{exam_score_id}/exam_answers/{exam_answer_id}",status_code=200)
-# async def update_exam_answer(
-#     exam_answer_id:int,
-#     exam_answer:_schemas.Exam_answerCreate,
-#     exam_score_id:int,
-#     db:_orm.Session = _fastapi.Depends(_services.get_db),
-# ):
-#     await _services.update_exam_answer(exam_answer_id,exam_answer,exam_score_id,db)
-#     return {"message","Successfully Updated"}
+@app.put("/api/questions/{ques_id}/answers/{ans_id}",status_code=200)
+async def update_answer(
+    ans_id:int,
+    answer:_schemas.AnswerCreate,
+    ques_id:int,
+    db:_orm.Session = _fastapi.Depends(_services.get_db),
+):
+    await _services.update_answer(ans_id,answer,ques_id,db)
+    return {"message","Successfully Updated"}

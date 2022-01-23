@@ -134,7 +134,7 @@ async def update_exam(exam_id: int, exam: _schemas.ExamCreate, user: _schemas.Us
 
     return _schemas.Exam.from_orm(exam_db)
 
-# *************************ข้อสอบ**********************************************
+# *************************คำถาม**********************************************
 
 async def create_question( db: _orm.Session, question: _schemas.QuestionCreate):
     question = _models.Question(
@@ -145,16 +145,15 @@ async def create_question( db: _orm.Session, question: _schemas.QuestionCreate):
     db.refresh(question)
     return _schemas.Question.from_orm(question)
 
-async def get_questions(exam:id, db: _orm.Session):
-    questions = db.query(_models.Question).filter_by(exam_id=exam)
+async def get_questions( db: _orm.Session):
+    questions = db.query(_models.Question)
 
     return list(map(_schemas.Question.from_orm, questions))
 
-async def _question_selector(question_id: int, exam: id, db: _orm.Session):
+async def _question_selector(ques_id: int, db: _orm.Session):
     question = (
         db.query(_models.Question)
-        .filter_by(exam_id=exam)
-        .filter(_models.Question.ques_id == question_id)
+        .filter(_models.Question.ques_id == ques_id)
         .first()
     )
 
@@ -163,19 +162,19 @@ async def _question_selector(question_id: int, exam: id, db: _orm.Session):
 
     return question
 
-async def get_question(question_id: int, exam: id, db: _orm.Session):
-    question = await _question_selector(question_id=question_id, exam=exam, db=db)
+async def get_question(ques_id: int, db: _orm.Session):
+    question = await _question_selector(ques_id=ques_id, db=db)
 
     return _schemas.Question.from_orm(question)
 
-async def delete_question(question_id:int,exam:_schemas.Exam,db: _orm.Session):
-    question = await _question_selector(question_id,exam,db)
+async def delete_question(ques_id:int,db: _orm.Session):
+    question = await _question_selector(ques_id,db)
 
     db.delete(question)
     db.commit()
 
-async def update_question(question_id:int , question:_schemas.QuestionCreate,exam:_schemas.Exam,db:_orm.Session):
-    question_db = await _question_selector(question_id,exam,db)
+async def update_question(ques_id:int , question:_schemas.QuestionCreate,db:_orm.Session):
+    question_db = await _question_selector(ques_id,db)
 
     question_db.question = question.question
     question_db.persent_checking = question.persent_checking
@@ -185,3 +184,43 @@ async def update_question(question_id:int , question:_schemas.QuestionCreate,exa
 
     return _schemas.Question.from_orm(question_db)
 
+#****************คำตอบ***********************
+async def create_answer(question: id, db: _orm.Session, answer: _schemas.AnswerCreate):
+    answer = _models.Answer(**answer.dict(), ques_id=question)
+    db.add(answer)
+    db.commit()
+    db.refresh(answer)
+    return _schemas.Answer.from_orm(answer)
+
+async def get_answers(question:id, db: _orm.Session):
+    answers = db.query(_models.Answer).filter_by(ques_id=question).order_by(desc(_models.Answer.score))
+    return list(map(_schemas.Answer.from_orm,answers))
+
+async def _answer_selector(ans_id: int, question: id, db: _orm.Session):
+    answer = (
+        db.query(_models.Answer)
+        .filter_by(ques_id=question)
+        .filter(_models.Answer.ans_id == ans_id)
+        .first()
+    )
+    return answer
+
+async def get_answer(ans_id: int, question: id, db: _orm.Session):
+    answer = await _answer_selector(ans_id=ans_id, question=question, db=db)
+
+    return _schemas.Answer.from_orm(answer)
+
+async def delete_answer(ans_id:int,question:_schemas.Question,db: _orm.Session):
+    answer = await _answer_selector(ans_id,question,db)
+
+    db.delete(answer)
+    db.commit()
+
+async def update_answer(ans_id:int , answer:_schemas.AnswerCreate,question:_schemas.Question,db:_orm.Session):
+    answer_db = await _answer_selector(ans_id,question,db)
+
+    answer_db.answer =answer.answer
+    answer_db.score = answer.score
+
+    db.commit()
+    db.refresh(answer_db)

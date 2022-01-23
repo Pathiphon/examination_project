@@ -88,7 +88,7 @@ export default function QModal({
       },
     };
     const response = await fetch(
-      `/api/exams/${exam_id}/questions/${ques_id}`,
+      `/api/questions/${ques_id}`,
       requestOptions
     );
     if (!response.ok) {
@@ -110,10 +110,11 @@ export default function QModal({
       },
       body: JSON.stringify({
         question: question,
+        persent_checking:persent_checking,
       }),
     };
     const response = await fetch(
-      `/api/exam_headings/${exam_id}/exam_questions/${ques_id}`,
+      `/api/questions/${ques_id}`,
       requestOptions
     );
     if (!response.ok) {
@@ -268,14 +269,15 @@ export default function QModal({
                 </Button>
               </Box> */}
           </Box>
-
-          {/* <Table_Ans ques_id={ques_id} token={token} />  */}
         </section>
 
         <footer className="modal-card-foot">
           <div className="container mx-auto text-center">
             {ques_id ? (
               <Button
+              className="mr-4"
+                color="warning"
+                variant="contained"
                 onClick={handleUpdateQuestion}
                 sx={{ borderRadius: "7px" }}
                 style={{

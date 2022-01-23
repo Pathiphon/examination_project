@@ -63,6 +63,11 @@ class _QuestionBase(_pydantic.BaseModel):
     question:str
     persent_checking :float
 
+    @_pydantic.validator('persent_checking')
+    def result_check(cls, v):
+        ...
+        return round(v, 2)
+
 class QuestionCreate(_QuestionBase):
     pass
 
@@ -95,15 +100,20 @@ class QuestionSchema(Question):
 
 
 #******************คำตอบ*********************
-# class _Exam_answerBase(_pydantic.BaseModel):
-#     answer:str
+class _AnswerBase(_pydantic.BaseModel):
+    answer:str
+    score:float
+    @_pydantic.validator('score')
+    def result_check(cls, v):
+        ...
+        return round(v, 2)
 
-# class Exam_answerCreate(_Exam_answerBase):
-#     pass
+class AnswerCreate(_AnswerBase):
+    pass
 
-# class Exam_answer(_Exam_answerBase):
-#     ans_id:int
-#     score_id:int
+class Answer(_AnswerBase):
+    ans_id:int
+    ques_id:int
 
-#     class Config:
-#         orm_mode=True
+    class Config:
+        orm_mode=True

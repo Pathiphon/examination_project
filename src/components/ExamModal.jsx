@@ -227,7 +227,7 @@ export default function ExamModal({
             {id ? (
               <Button
                 className="mr-4"
-                color="success"
+                color="warning"
                 variant="contained"
                 onClick={handleUpdateExam}
                 sx={{ borderRadius: "7px" }}

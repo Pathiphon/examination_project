@@ -2,7 +2,7 @@ import { Card } from "@mui/material";
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import QModal from "./QModal";
-import Swal from 'sweetalert2'
+import Table_Ans from "./Table_Ans";
 import {
   Divider,
   Chip,
@@ -22,6 +22,7 @@ export default function Table_Ques({ exam_id,get_modal_create_exam }) {
   const [score, setScore] = useState("");
   const [ques_id,setQues_id]=useState(null)
   const [activeModalQ,setActiveModalQ] = useState(false)
+  const [activeModalAns,setActiveModalAns] = useState(false)
   const [token] = useContext(UserContext);
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -67,11 +68,30 @@ const handleClickQ = async(id) =>{
   setActiveModalQ(true)
   get_modal_create_exam(!activeModalQ)
 }
+const handleModalAns = async () =>{
+  get_Question()
+  get_modal_create_exam(!activeModalAns)
+  setActiveModalAns(!activeModalAns);
+  setQues_id(null)
+
+}
+const handleClickAns = async(id) =>{
+setQues_id(id)
+setActiveModalAns(true)
+get_modal_create_exam(!activeModalAns)
+}
 
 
 
   return (
     <div>
+      <Table_Ans 
+      active={activeModalAns}
+      handleModalAns={handleModalAns}
+      ques_id={ques_id} 
+      token={token} 
+      
+      /> 
       <QModal
                 active={activeModalQ}
                 handleModalQ={handleModalQ}
@@ -121,7 +141,7 @@ const handleClickQ = async(id) =>{
                     sx={{whiteSpace:'nowrap',ml:1}}
                     variant="outlined"
                     color="secondary"
-                    startIcon={<AssignmentTurnedInIcon />} 
+                    startIcon={<AssignmentTurnedInIcon />}  onClick={() => handleClickAns(All_questions.ques_id)}
                   >
                     แก้ไขเฉลย
                   </Button>
