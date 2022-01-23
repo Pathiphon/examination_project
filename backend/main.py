@@ -1,10 +1,17 @@
 from typing import List
 import fastapi as _fastapi
 import fastapi.security as _security
+import database as _database, models as _models
 import sqlalchemy.orm as _orm
 import services as _services, schemas as _schemas
 
 app = _fastapi.FastAPI()
+def get_db():
+    db = _database.SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @app.post("/api/users")
@@ -89,15 +96,26 @@ async def update_exam(
 async def root():
     return {"message": "Awesome Leads Manager"}
 
-    
+
+
 # **********************************คำถาม*************************************
-@app.post("/api/exams/{exam_id}/question", response_model=_schemas.Question)
+
+@app.get("/exams/{exam_id}",response_model=_schemas.ExamSchema,response_model_exclude={'blurb'},response_model_by_alias=False)
+async def get_questions(exam_id:int,db:_orm.Session() = _fastapi.Depends(get_db)):
+    db_question = db.query(_models.Exam).options(_orm.joinedload(_models.Exam.question)).where(_models.Exam.exam_id==exam_id).one()
+    return db_question
+
+@app.get("/questions/{exam_id}",response_model=_schemas.ExamSchema,response_model_exclude={'blurb'},response_model_by_alias=False)
+async def get_questions(exam_id:int,db:_orm.Session() = _fastapi.Depends(get_db)):
+    db_question = db.query(_models.Exam).options(_orm.joinedload(_models.Exam.question)).where(_models.Exam.exam_id==exam_id).one()
+    return db_question
+
+@app.post("/api/question", response_model=_schemas.Question)
 async def create_question(
     question: _schemas.QuestionCreate,
-    exam_id:int,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    return await _services.create_question(exam=exam_id, db=db,question=question)
+    return await _services.create_question( db=db,question=question)
 
 @app.get("/api/exams/{exam_id}/question", response_model=List[_schemas.Question])
 async def get_questions(

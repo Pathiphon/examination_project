@@ -187,7 +187,7 @@ const Header = () => {
             <Box
               
               component="main"
-              sx={{  p: 2 }}
+              sx={{  p: 4 }}
             >
               
               <Routes>

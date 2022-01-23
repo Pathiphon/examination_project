@@ -106,7 +106,7 @@ export default function Create_exam({data}) {
                 handleModalQ={handleModalQ}
                 token={token}
                 ques_id={ques_id}
-                heading_id={id}
+                exam_id={id}
                 setErrorMessage={setErrorMessage}  
             />
             <Box>
@@ -141,11 +141,11 @@ export default function Create_exam({data}) {
                             <Typography component="div" sx={{ display: 'flex' }} variant="h6" className="mb-5" >
                                 หัวข้อสอบ : {id ? (name) : (<h6>-</h6>)}
                             </Typography>
-                            <Typography variant="subtitle1" color="text.secondary" sx={{ display: 'flex' }} component="div" className="mb-1">
-                                ระยะเวลาทำข้อสอบ : {id ? <>{date_pre}  -  {date_post}</> : (<Typography>-</Typography>)}
+                            <Typography variant="subtitle1" color="text.secondary" sx={{ display: 'flex' }} component="div" >
+                                วัน/เวลาเริ่มต้น : {id ? <>{date_pre}</> : (<Typography>-</Typography>)}
                             </Typography>
-                            <Typography variant="subtitle1" sx={{ display: 'flex' }} color="text.secondary" component="div">
-                                แก้ไขล่าสุดเมื่อ : {id ? (date_last_updated) : (<Typography> - </Typography>)}
+                            <Typography variant="subtitle1" color="text.secondary" sx={{ display: 'flex' }} component="div" >
+                                วัน/เวลาสิ้นสุด : {id ? <>{date_post}</> : (<Typography>-</Typography>)}
                             </Typography>
                         </CardContent>
                     </Box>
@@ -190,13 +190,13 @@ export default function Create_exam({data}) {
                             sx={{borderRadius: '20px'}}
                             onClick={() => setActiveModalQ(true)}
                             >
-                            เพิ่มโจทย์ <AddCircleIcon sx={{ ml: 3 }}/>
+                            เพิ่มคำถาม <AddCircleIcon sx={{ ml: 3 }}/>
                         </Button>
                     </Grid>
 
                 </Box>
                 <Table_Ques 
-                heading_id={id} 
+                exam_id={id} 
                 get_modal_create_exam={get_modal_create_exam}
                 />
                 

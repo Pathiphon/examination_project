@@ -78,7 +78,7 @@ async def get_current_user(
     return _schemas.User.from_orm(user)
 
 
-# *************************************************************************
+# ********************************แบบทดสอบ*****************************************
 
 async def create_exam(user: _schemas.User, db: _orm.Session, exam: _schemas.ExamCreate):
     exam = _models.Exam(**exam.dict(), owner_id=user.T_id)
@@ -124,7 +124,7 @@ async def update_exam(exam_id: int, exam: _schemas.ExamCreate, user: _schemas.Us
     exam_db = await _exam_selector(exam_id, user, db)
 
     exam_db.name = exam.name
-    exam_db.exam_status = exam.exam_status
+    exam_db.exam_status=exam.exam_status
     exam_db.date_pre = exam.date_pre
     exam_db.date_post = exam.date_post
     exam_db.date_last_updated = tz.date.isoformat(sep = " ")
@@ -136,8 +136,10 @@ async def update_exam(exam_id: int, exam: _schemas.ExamCreate, user: _schemas.Us
 
 # *************************ข้อสอบ**********************************************
 
-async def create_question(exam: id, db: _orm.Session, question: _schemas.QuestionCreate):
-    question = _models.Question(**question.dict(), exam_id=exam)
+async def create_question( db: _orm.Session, question: _schemas.QuestionCreate):
+    question = _models.Question(
+        question=question.question,persent_checking=question.persent_checking
+    )
     db.add(question)
     db.commit()
     db.refresh(question)

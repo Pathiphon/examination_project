@@ -13,9 +13,10 @@ import {
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
-export default function Table_Ques({ heading_id,get_modal_create_exam }) {
+export default function Table_Ques({ exam_id,get_modal_create_exam }) {
   const [All_question, setAll_question] = useState(null);
   const [question, setQuestion] = useState("");
   const [score, setScore] = useState("");
@@ -36,22 +37,23 @@ export default function Table_Ques({ heading_id,get_modal_create_exam }) {
       },
     };
     const response = await fetch(
-      `/api/exam_headings/${heading_id}/exam_question`,
+      `/exams/${exam_id}`,
       requestOptions
     );
     if (!response.ok) {
       setErrorMessage("Something went wrong.Couldn't load the Exam");
     } else {
       const data = await response.json();
-      setAll_question(data);
+      console.log(data);
+      setAll_question(data.question);
     }
   };
 
   useEffect(() => {
-    if(heading_id){
+    if(exam_id){
         get_Question();
     }
-  });
+  },[exam_id]);
 
   const handleModalQ = async () =>{
     get_Question()
@@ -75,7 +77,7 @@ const handleClickQ = async(id) =>{
                 handleModalQ={handleModalQ}
                 token={token}
                 ques_id={ques_id}
-                heading_id={heading_id}
+                exam_id={exam_id}
                 setErrorMessage={setErrorMessage}  
             />
       {All_question  ? (
@@ -108,13 +110,21 @@ const handleClickQ = async(id) =>{
                 <Grid item>
                   <Box sx={{display:'flex'}}>
                     <Button
-                    
+                      sx={{whiteSpace:'nowrap'}}
                       variant="outlined"
                       color="warning"
                       startIcon={<EditIcon />} onClick={() => handleClickQ(All_questions.ques_id)}
                     >
-                      แก้ไข
+                      แก้ไขคำถาม
                     </Button>
+                    <Button
+                    sx={{whiteSpace:'nowrap',ml:1}}
+                    variant="outlined"
+                    color="secondary"
+                    startIcon={<AssignmentTurnedInIcon />} 
+                  >
+                    แก้ไขเฉลย
+                  </Button>
                     <Button sx={{ml:1}}
                       variant="outlined"
                       color="error"

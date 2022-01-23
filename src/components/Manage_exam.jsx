@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ErrorMessage from "./ErrorMessage";
 import { UserContext } from "../context/UserContext";
 import Manage_exam_full from "../img/manage_exam_full.png";
-
+import { styled, alpha } from '@mui/material/styles';
 import {
   Button,
   InputBase,
@@ -33,6 +33,40 @@ export default function Manage_exam() {
   const [id, setId] = useState(null);
 
   let navigate = useNavigate();
+  const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    color:"#000000",
+    backgroundColor: "#ffffff",
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(1),
+      width: 'auto',
+    },
+  }));
+  const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }));
+  const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+      padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+      transition: theme.transitions.create('width'),
+      width: '100%',
+      [theme.breakpoints.up('md')]: {
+        width: '20ch',
+      },
+    },
+  }));
 
   const get_Exam = async () => {
     const requestOptions = {
@@ -61,10 +95,12 @@ export default function Manage_exam() {
   };
 
   return (
-    <div className="container">
-      <InputBase
-        sx={{ ml: 1, flex: 1, width: "80%" }}
+    <div className="container ml-4">
+      <Toolbar />
+      {/* <InputBase
+        sx={{ ml: 1, flex: 1, width: "80%"}}
         placeholder="ค้นหาหัวข้อสอบ"
+        
         inputProps={{ "aria-label": "search google maps" }}
       />
       <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
@@ -75,7 +111,16 @@ export default function Manage_exam() {
         color="primary"
         sx={{ p: "10px" }}
         aria-label="directions"
-      ></IconButton>
+      ></IconButton> */}
+      <Search sx={{boxShadow:3}}>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="ค้นหาหัวข้อสอบ"
+              inputProps={{ 'aria-label': 'search' }}
+            />
+          </Search>
       {exam !== null ? (
         <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
           {exam.map((exams) => (
